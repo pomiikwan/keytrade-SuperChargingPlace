@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MD内容加载测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 MD内容加载测试工具</h1>
+        <p>这个工具用于测试MD文件加载功能是否正常工作</p>
+
+        <div class="test-section">
+            <h2>📋 测试控制</h2>
+            <button onclick="testAllMDFiles()">🔄 测试所有MD文件</button>
+            <button onclick="testSpecificFile()">🎯 测试特定文件</button>
+            <button onclick="clearLog()">🗑️ 清空日志</button>
+            <button onclick="showFileList()">📁 显示文件列表</button>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 测试结果</h2>
+            <div id="testResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📝 详细日志</h2>
+            <div id="logOutput" class="log">等待测试...</div>
+        </div>
+    </div>
+
+    <script>
+        // MD文件路径映射
+        const mdFilePaths = {
+            'execSummary': '生成式商业计划书内容/执行摘要.md',
+            'marketAnalysis': '生成式商业计划书内容/市场分析.md',
+            'technicalPlan': '生成式商业计划书内容/技术方案.md',
+            'financialModel': '生成式商业计划书内容/财务分析.md',
+            'riskAssessment': '生成式商业计划书内容/风险评估.md',
+            'implementationPlan': '生成式商业计划书内容/实施执行.md',
+            'teamIntro': '生成式商业计划书内容/团队介绍.md',
+            'financingPlan': '生成式商业计划书内容/融资方案.md'
+        };
+
+        function log(message) {
+            const logOutput = document.getElementById('logOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            logOutput.textContent += `[${timestamp}] ${message}\n`;
+            logOutput.scrollTop = logOutput.scrollHeight;
+            console.log(message);
+        }
+
+        function showStatus(sectionId, status, message) {
+            const resultsDiv = document.getElementById('testResults');
+            let statusDiv = document.getElementById(`status-${sectionId}`);
+
+            if (!statusDiv) {
+                statusDiv = document.createElement('div');
+                statusDiv.id = `status-${sectionId}`;
+                statusDiv.className = 'status';
+                resultsDiv.appendChild(statusDiv);
+            }
+
+            statusDiv.className = `status ${status}`;
+            statusDiv.innerHTML = `<strong>${sectionId}</strong>: ${message}`;
+        }
+
+        async function testSingleMDFile(sectionId) {
+            log(`🔄 开始测试: ${sectionId}`);
+
+            try {
+                const filePath = mdFilePaths[sectionId];
+                log(`📁 文件路径: ${filePath}`);
+
+                const response = await fetch(filePath);
+                log(`📡 HTTP状态: ${response.status} ${response.statusText}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const content = await response.text();
+                log(`📄 文件大小: ${content.length} 字符`);
+                log(`📝 前100字符预览: ${content.substring(0, 100)}...`);
+
+                showStatus(sectionId, 'success', '✅ 加载成功');
+                log(`✅ ${sectionId} 测试成功`);
+                return true;
+
+            } catch (error) {
+                log(`❌ ${sectionId} 测试失败: ${error.message}`);
+                showStatus(sectionId, 'error', `❌ 错误: ${error.message}`);
+                return false;
+            }
+        }
+
+        async function testAllMDFiles() {
+            log('🚀 开始测试所有MD文件...');
+            document.getElementById('testResults').innerHTML = '';
+
+            const results = [];
+            for (const sectionId of Object.keys(mdFilePaths)) {
+                const success = await testSingleMDFile(sectionId);
+                results.push({ sectionId, success });
+                await new Promise(resolve => setTimeout(resolve, 100)); // 小延迟避免并发问题
+            }
+
+            const successCount = results.filter(r => r.success).length;
+            const totalCount = results.length;
+
+            log(`\n📊 测试完成: ${successCount}/${totalCount} 成功`);
+
+            if (successCount === totalCount) {
+                log('🎉 所有MD文件加载测试通过！');
+            } else {
+                log('⚠️ 部分MD文件加载失败，请检查服务器日志');
+            }
+        }
+
+        async function testSpecificFile() {
+            const sectionId = prompt('请输入要测试的章节ID:', 'technicalPlan');
+            if (!sectionId) return;
+
+            if (!mdFilePaths[sectionId]) {
+                log(`❌ 未找到章节ID: ${sectionId}`);
+                log(`📋 可用的章节ID: ${Object.keys(mdFilePaths).join(', ')}`);
+                return;
+            }
+
+            await testSingleMDFile(sectionId);
+        }
+
+        function showFileList() {
+            log('📁 MD文件列表:');
+            Object.entries(mdFilePaths).forEach(([sectionId, filePath]) => {
+                log(`   ${sectionId}: ${filePath}`);
+            });
+        }
+
+        function clearLog() {
+            document.getElementById('logOutput').textContent = '';
+            log('日志已清空');
+        }
+
+        // 页面加载时显示文件列表
+        window.onload = function() {
+            log('🎯 MD内容加载测试工具已启动');
+            showFileList();
+            log('\n点击"测试所有MD文件"按钮开始测试');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,2963 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>千站液冷超充项目 - 交互式财务计算器</title>
+    <link rel="stylesheet" href="库里蓝暗夜主题.css">
+    <style>
+        /* 交互式计算器特有样式 */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .results-section {
+            margin-bottom: 30px;
+        }
+
+        .parameters-section {
+            margin-bottom: 30px;
+        }
+
+        .timing-parameters,
+        .channel-parameters {
+            background: rgba(26, 35, 71, 0.5);
+            border: 1px solid rgba(0, 119, 192, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        select.input-field {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(0, 119, 192, 0.4);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(26, 35, 71, 0.7);
+            color: #FFFFFF;
+            outline: none;
+            cursor: pointer;
+        }
+
+        select.input-field:focus {
+            border-color: #FFC72C;
+            box-shadow: 0 0 15px rgba(255, 199, 44, 0.3);
+            background: rgba(29, 66, 138, 0.9);
+        }
+
+        select.input-field option {
+            background: #1A2347;
+            color: #FFFFFF;
+            padding: 10px;
+        }
+
+        .calculation-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .calculation-buttons .btn-primary {
+            flex: 1;
+            margin-top: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calculation-buttons .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .calculation-buttons .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .investment-calc-btn:disabled {
+            background: linear-gradient(135deg, #666 0%, #888 100%);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .investment-calc-btn:disabled:hover {
+            transform: none;
+            background: linear-gradient(135deg, #666 0%, #888 100%);
+            box-shadow: 0 4px 15px rgba(0, 119, 192, 0.3);
+        }
+
+        .investment-calc-btn:enabled {
+            background: linear-gradient(135deg, #FFC72C 0%, #FFD700 100%);
+            color: #1D428A;
+            border-color: rgba(29, 66, 138, 0.3);
+        }
+
+        .investment-calc-btn:enabled:hover {
+            background: linear-gradient(135deg, #FFD700 0%, #FFC72C 100%);
+            border-color: #1D428A;
+            box-shadow: 0 12px 30px rgba(255, 199, 44, 0.6);
+        }
+
+        .calculation-status {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(26, 35, 71, 0.5);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 119, 192, 0.3);
+        }
+
+        .status-text {
+            color: #B8C5D6;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-text.success {
+            color: #4CAF50;
+        }
+
+        .status-text.ready {
+            color: #FFC72C;
+        }
+
+        .project-timing-info {
+            margin: 20px 0;
+        }
+
+        .info-card {
+            background: rgba(29, 66, 138, 0.8);
+            border: 1px solid rgba(255, 199, 44, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 119, 192, 0.3);
+        }
+
+        .info-card h4 {
+            color: #FFC72C;
+            font-size: 16px;
+            margin: 0 0 15px 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 199, 44, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .timing-data {
+            display: grid;
+            gap: 12px;
+        }
+
+        .timing-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(26, 35, 71, 0.6);
+            border-radius: 6px;
+            border: 1px solid rgba(0, 119, 192, 0.2);
+        }
+
+        .timing-label {
+            color: #B8C5D6;
+            font-size: 14px;
+        }
+
+        .timing-value {
+            color: #FFFFFF;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .timing-hint {
+            display: block;
+            margin-top: 5px;
+            color: #FFC72C;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        input[readonly] {
+            background: rgba(26, 35, 71, 0.5) !important;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        input[readonly]:focus {
+            border-color: rgba(0, 119, 192, 0.4) !important;
+            box-shadow: none !important;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(0, 119, 192, 0.5);
+        }
+
+        .section-icon {
+            font-size: 24px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #B8C5D6;
+            margin-left: auto;
+            opacity: 0.8;
+        }
+
+        .section-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 25px 0;
+            gap: 15px;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 199, 44, 0.5), transparent);
+        }
+
+        .divider-text {
+            background: linear-gradient(135deg, #1D428A 0%, #0077C0 100%);
+            color: #FFC72C;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(255, 199, 44, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 119, 192, 0.3);
+        }
+
+        .divider-icon {
+            font-size: 14px;
+        }
+
+        .chart-container {
+            background: rgba(26, 35, 71, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid rgba(0, 119, 192, 0.3);
+        }
+
+        .scenario-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+            background: rgba(26, 35, 71, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 119, 192, 0.2);
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #FFFFFF;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #B8C5D6;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            background: rgba(26, 35, 71, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 119, 192, 0.3);
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 119, 192, 0.3);
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FFFFFF 0%, #B8C5D6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #B8C5D6;
+            margin-bottom: 20px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: rgba(26, 35, 71, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 119, 192, 0.3);
+            border: 1px solid rgba(0, 119, 192, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 119, 192, 0.4);
+            border-color: rgba(255, 199, 44, 0.5);
+            background: rgba(29, 66, 138, 0.95);
+        }
+
+        .panel-title {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FFFFFF 0%, #B8C5D6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid rgba(0, 119, 192, 0.5);
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            color: #FFFFFF;
+            margin-bottom: 5px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid rgba(0, 119, 192, 0.4);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(26, 35, 71, 0.7);
+            color: #FFFFFF;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: #FFC72C;
+            box-shadow: 0 0 15px rgba(255, 199, 44, 0.3);
+            background: rgba(29, 66, 138, 0.9);
+        }
+
+        .input-unit {
+            font-size: 14px;
+            color: #B8C5D6;
+            min-width: 60px;
+        }
+
+        .input-slider {
+            width: 100%;
+            margin-top: 5px;
+            appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(26, 35, 71, 0.7);
+            outline: none;
+            border: 1px solid rgba(0, 119, 192, 0.4);
+        }
+
+        .input-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFC72C 0%, #FFD700 100%);
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 199, 44, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .input-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 15px rgba(255, 199, 44, 0.6);
+        }
+
+        .input-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFC72C 0%, #FFD700 100%);
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 199, 44, 0.4);
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .input-slider::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 15px rgba(255, 199, 44, 0.6);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1D428A 0%, #0077C0 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 119, 192, 0.3);
+            border: 1px solid rgba(0, 119, 192, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, #0077C0 0%, #1D428A 100%);
+            border-color: #FFC72C;
+            box-shadow: 0 12px 30px rgba(255, 199, 44, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(26, 35, 71, 0.7);
+            color: #B8C5D6;
+            border: 1px solid rgba(0, 119, 192, 0.4);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(29, 66, 138, 0.9);
+            color: white;
+            border-color: #FFC72C;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 119, 192, 0.3);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .result-card {
+            background: rgba(26, 35, 71, 0.7);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid rgba(0, 119, 192, 0.4);
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 119, 192, 0.2);
+        }
+
+        .result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 119, 192, 0.3);
+            border-color: rgba(255, 199, 44, 0.4);
+            background: rgba(29, 66, 138, 0.8);
+        }
+
+        .result-value {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FFC72C 0%, #FFD700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: #B8C5D6;
+        }
+
+        .result-highlight {
+            background: rgba(29, 66, 138, 0.8);
+            border-color: rgba(255, 199, 44, 0.6);
+            box-shadow: 0 8px 32px rgba(255, 199, 44, 0.3);
+        }
+
+        .result-highlight .result-value {
+            background: linear-gradient(135deg, #FFC72C 0%, #FFD700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 32px;
+        }
+
+        .chart-container {
+            background: rgba(26, 35, 71, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 119, 192, 0.3);
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 119, 192, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 60px rgba(0, 119, 192, 0.4);
+            border-color: rgba(255, 199, 44, 0.5);
+            background: rgba(29, 66, 138, 0.95);
+        }
+
+        .chart-title {
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FFFFFF 0%, #B8C5D6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .chart-description {
+            background: rgba(29, 66, 138, 0.6);
+            border: 1px solid rgba(255, 199, 44, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .chart-description p {
+            margin: 5px 0;
+            color: #B8C5D6;
+        }
+
+        .chart-description strong {
+            color: #FFC72C;
+            font-weight: bold;
+        }
+
+        .simple-chart {
+            height: 300px;
+            position: relative;
+            background: rgba(26, 35, 71, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 119, 192, 0.2);
+        }
+
+        .bar-container {
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            height: 200px;
+            margin-top: 20px;
+        }
+
+        .bar {
+            width: 60px;
+            background: linear-gradient(to top, #0077C0, #1D428A);
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 119, 192, 0.4);
+        }
+
+        .bar:hover {
+            transform: scaleY(1.05);
+            background: linear-gradient(to top, #1D428A, #FFC72C);
+            box-shadow: 0 8px 25px rgba(255, 199, 44, 0.5);
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #FFFFFF;
+            white-space: nowrap;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: #FFC72C;
+            white-space: nowrap;
+        }
+
+        .section-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(0, 119, 192, 0.5);
+            background: rgba(26, 35, 71, 0.3);
+            border-radius: 10px 10px 0 0;
+            padding: 10px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            color: #B8C5D6;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            border-radius: 8px;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #1D428A 0%, #0077C0 100%);
+            color: #FFFFFF;
+            border-bottom-color: #FFC72C;
+            box-shadow: 0 4px 15px rgba(0, 119, 192, 0.4);
+        }
+
+        .tab:hover {
+            color: #FFFFFF;
+            background: rgba(29, 66, 138, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .formula-display {
+            background: rgba(26, 35, 71, 0.7);
+            border: 1px solid rgba(0, 119, 192, 0.4);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #B8C5D6;
+        }
+
+        .scenario-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background: rgba(26, 35, 71, 0.95);
+            backdrop-filter: blur(20px);
+            color: #FFFFFF;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            font-size: 12px;
+            line-height: 1.4;
+            border: 1px solid rgba(0, 119, 192, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 119, 192, 0.4);
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .results-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .panel {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 20px 15px;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .panel-title {
+                font-size: 20px;
+            }
+
+            .section-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .section-subtitle {
+                margin-left: 0;
+                font-size: 12px;
+            }
+
+            .section-divider {
+                flex-direction: column;
+                gap: 10px;
+                margin: 20px 0;
+            }
+
+            .divider-line {
+                width: 100%;
+                height: 1px;
+            }
+
+            .divider-text {
+                font-size: 11px;
+                padding: 6px 12px;
+            }
+
+            .scenario-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .btn-secondary {
+                width: 100%;
+                max-width: 200px;
+            }
+
+            .section-tabs {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .tab {
+                text-align: center;
+                padding: 10px 15px;
+            }
+
+            .result-value {
+                font-size: 24px;
+            }
+
+            .result-highlight .result-value {
+                font-size: 28px;
+            }
+
+            .chart-container {
+                padding: 20px;
+            }
+
+            .simple-chart {
+                height: 250px;
+                padding: 15px;
+            }
+
+            .bar {
+                width: 40px;
+            }
+
+            .bar-label, .bar-value {
+                font-size: 10px;
+            }
+
+            .results-section {
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+
+            .header {
+                padding: 15px 10px;
+            }
+
+            .title {
+                font-size: 20px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+            }
+
+            .panel {
+                padding: 15px;
+            }
+
+            .panel-title {
+                font-size: 18px;
+            }
+
+            .section-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .section-icon {
+                font-size: 20px;
+            }
+
+            .section-subtitle {
+                font-size: 11px;
+                margin-left: 0;
+            }
+
+            .divider-text {
+                font-size: 10px;
+                padding: 4px 8px;
+            }
+
+            .result-value {
+                font-size: 20px;
+            }
+
+            .result-highlight .result-value {
+                font-size: 24px;
+            }
+
+            .simple-chart {
+                height: 200px;
+                padding: 10px;
+            }
+
+            .bar {
+                width: 30px;
+            }
+
+            .bar-label, .bar-value {
+                font-size: 9px;
+            }
+
+            .results-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 12px;
+            }
+
+            .results-section {
+                margin-bottom: 15px;
+            }
+
+            .section-divider {
+                margin: 15px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">千站液冷超充项目</h1>
+            <p class="subtitle">🧮 交互式财务计算器 - 投资者自定义分析工具</p>
+            <div class="scenario-buttons">
+                <button class="btn-secondary" onclick="loadScenario('conservative')">😟 悲观情景</button>
+                <button class="btn-secondary" onclick="loadScenario('base')">📊 基准情景</button>
+                <button class="btn-secondary" onclick="loadScenario('optimistic')">😊 乐观情景</button>
+                <button class="btn-secondary" onclick="resetParameters()">🔄 重置参数</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- 参数输入面板 -->
+            <div class="panel">
+                <h2 class="panel-title">📝 参数设置</h2>
+
+                <!-- 项目参数设置模块 -->
+                <div class="parameters-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">🏢</span>
+                        项目参数设置
+                        <span class="section-subtitle">影响项目整体运营表现</span>
+                    </h3>
+
+                    <div class="section-tabs">
+                        <button class="tab active" onclick="switchProjectTab('market')">市场参数</button>
+                        <button class="tab" onclick="switchProjectTab('operation')">运营参数</button>
+                        <button class="tab" onclick="switchProjectTab('cost')">成本参数</button>
+                        <button class="tab" onclick="switchProjectTab('production')">投产参数</button>
+                        <button class="tab" onclick="switchProjectTab('decision')">公司决策</button>
+                    </div>
+
+                    <!-- 市场参数 -->
+                    <div id="market-tab" class="tab-content active">
+                        <div class="input-group">
+                            <label class="input-label">
+                                基础电动车保有量 (2023年)
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">2023年中国纯电动汽车保有量基础数据</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="base_evs" class="input-field" value="1500" min="1000" max="3000" step="100">
+                                <span class="input-unit">万辆</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">年复合增长率</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="growth_rate" class="input-field" value="25" min="10" max="50" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                            <input type="range" id="growth_rate_slider" class="input-slider" min="10" max="50" value="25" step="1">
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">充电桩市场渗透率</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="penetration_rate" class="input-field" value="35" min="20" max="60" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 运营参数 -->
+                    <div id="operation-tab" class="tab-content">
+                        <div class="input-group">
+                            <label class="input-label">单站充电枪数量</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="guns_per_station" class="input-field" value="12" min="6" max="24" step="2">
+                                <span class="input-unit">枪</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">设备利用率</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="utilization_rate" class="input-field" value="30" min="10" max="60" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                            <input type="range" id="utilization_rate_slider" class="input-slider" min="10" max="60" value="30" step="1">
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">日运营小时数</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="daily_hours" class="input-field" value="20" min="12" max="24" step="1">
+                                <span class="input-unit">小时</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">单枪平均功率</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="gun_power" class="input-field" value="180" min="60" max="600" step="20">
+                                <span class="input-unit">kW</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">充电收入单价</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="charging_price" class="input-field" value="0.95" min="0.5" max="2.0" step="0.05">
+                                <span class="input-unit">元/度</span>
+                            </div>
+                            <input type="range" id="charging_price_slider" class="input-slider" min="0.5" max="2.0" value="0.95" step="0.05">
+                        </div>
+                    </div>
+
+                    <!-- 成本参数 -->
+                    <div id="cost-tab" class="tab-content">
+                        <div class="input-group">
+                            <label class="input-label">服务费价差</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="price_spread" class="input-field" value="0.55" min="0.3" max="1.0" step="0.05">
+                                <span class="input-unit">元/度</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">电费成本</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="electricity_cost" class="input-field" value="0.4" min="0.2" max="0.8" step="0.05">
+                                <span class="input-unit">元/度</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">单站年人工成本</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="labor_cost" class="input-field" value="120" min="60" max="300" step="10">
+                                <span class="input-unit">万元</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">单站年租金成本</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="rent_cost" class="input-field" value="80" min="40" max="200" step="10">
+                                <span class="input-unit">万元</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 投产参数 -->
+                    <div id="production-tab" class="tab-content">
+                        <div class="input-group">
+                            <label class="input-label">计划建设充电站数量</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="total_stations" class="input-field" value="1000" min="100" max="2000" step="100">
+                                <span class="input-unit">座</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">单站建设成本</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="construction_cost" class="input-field" value="280" min="150" max="500" step="10">
+                                <span class="input-unit">万元</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">政府补贴比例</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="subsidy_rate" class="input-field" value="10" min="0" max="30" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">折现率</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="discount_rate" class="input-field" value="12" min="8" max="20" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 公司决策参数 -->
+                    <div id="decision-tab" class="tab-content">
+                        <div class="input-group">
+                            <label class="input-label">
+                                资本公积计提比例
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">从净利润中计提资本公积的比例，用于公司发展和风险缓冲</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="capital_surplus_rate" class="input-field" value="20" min="0" max="50" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">
+                                项目企业所得税率
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">项目公司适用的企业所得税率，影响税后利润计算</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="corporate_tax_rate" class="input-field" value="25" min="0" max="35" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">
+                                归属投资者可分配利润
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">税后利润中分配给投资者的比例，影响投资者分红计算</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="distributable_profit_rate" class="input-field" value="70" min="0" max="70" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                            <input type="range" id="distributable_profit_rate_slider" class="input-slider" min="0" max="70" value="70" step="1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 项目计算按钮 -->
+                <div class="calculation-buttons">
+                    <button class="btn-primary project-calc-btn" onclick="calculateProjectResults()" id="project_calc_btn">
+                        📊 第一步：计算项目分析
+                    </button>
+                    <button class="btn-primary investment-calc-btn" onclick="calculateInvestmentResults()" id="investment_calc_btn" disabled>
+                        💰 第二步：计算投资回报
+                    </button>
+                </div>
+                <div class="calculation-status" id="calculation_status">
+                    <span class="status-text">请先完成项目分析计算</span>
+                </div>
+
+                <!-- 分隔线 -->
+                <div class="section-divider">
+                    <div class="divider-line"></div>
+                    <div class="divider-text">
+                        <span class="divider-icon">💰</span>
+                        投资者个性化参数设置
+                    </div>
+                    <div class="divider-line"></div>
+                </div>
+
+                <!-- 投资参数设置模块 -->
+                <div class="parameters-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">💵</span>
+                        投资参数设置
+                        <span class="section-subtitle">定制化投资方案设计</span>
+                    </h3>
+
+                    <div class="section-tabs">
+                        <button class="tab active" onclick="switchInvestmentTab('share')">份额参数</button>
+                        <button class="tab" onclick="switchInvestmentTab('timing')">投入时机</button>
+                        <button class="tab" onclick="switchInvestmentTab('channel')">投资渠道</button>
+                    </div>
+
+                    <!-- 份额参数 -->
+                    <div id="share-tab" class="tab-content active">
+                        <div class="input-group">
+                            <label class="input-label">
+                                投资份额占比
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">您在项目中的投资份额比例</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="investment_share" class="input-field" value="100" min="10" max="100" step="5">
+                                <span class="input-unit">%</span>
+                            </div>
+                            <input type="range" id="investment_share_slider" class="input-slider" min="10" max="100" value="100" step="5">
+                        </div>
+
+  
+                        <div class="input-group">
+                            <label class="input-label">
+                                投资者公司经营税率
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">投资者所在公司的经营所得税税率（默认0%，因项目已缴企业所得税）</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="investor_corporate_tax_rate" class="input-field" value="0" min="0" max="30" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">
+                                个人所得税率
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">分红个人所得税税率</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="personal_tax_rate" class="input-field" value="20" min="0" max="45" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 投入时机 -->
+                    <div id="timing-tab" class="tab-content">
+                        <div class="input-group">
+                            <label class="input-label">投资时机选择</label>
+                            <select id="investment_timing" class="input-field" onchange="updateTimingParameters()">
+                                <option value="preparation">筹备期 - 项目启动前</option>
+                                <option value="production">投产期 - 建设运营中</option>
+                                <option value="payback">回本期 - 开始盈利（基于项目计算结果）</option>
+                                <option value="listing">上市期 - IPO前</option>
+                                <option value="securitization">多元证券化期 - 成熟运营</option>
+                            </select>
+                        </div>
+
+                        <div class="project-timing-info" id="project-timing-info" style="display: none;">
+                            <div class="info-card">
+                                <h4>项目关键时点（基于计算结果）</h4>
+                                <div class="timing-data">
+                                    <div class="timing-item">
+                                        <span class="timing-label">项目回收期：</span>
+                                        <span class="timing-value" id="project_payback_display">--</span>
+                                    </div>
+                                    <div class="timing-item">
+                                        <span class="timing-label">项目IRR：</span>
+                                        <span class="timing-value" id="project_irr_display">--</span>
+                                    </div>
+                                    <div class="timing-item">
+                                        <span class="timing-label">项目NPV：</span>
+                                        <span class="timing-value" id="project_npv_display">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timing-parameters" id="timing-parameters">
+                            <div class="input-group">
+                                <label class="input-label">
+                                    筹备期投资溢价
+                                    <span class="tooltip">ℹ️
+                                        <span class="tooltiptext">早期投资风险溢价，通常为负值（折价）</span>
+                                    </span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="preparation_premium" class="input-field" value="-20" min="-50" max="0" step="1">
+                                    <span class="input-unit">%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">
+                                投资时点
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">相对项目启动的时间点，回本期将基于项目计算结果自动设置</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="investment_year" class="input-field" value="0" min="0" max="10" step="1" readonly>
+                                <span class="input-unit">年</span>
+                            </div>
+                            <small class="timing-hint" id="timing_hint">请先完成项目分析计算</small>
+                        </div>
+                    </div>
+
+                    <!-- 投资渠道 -->
+                    <div id="channel-tab" class="tab-content">
+                        <div class="input-group">
+                            <label class="input-label">投资渠道选择</label>
+                            <select id="investment_channel" class="input-field" onchange="updateChannelParameters()">
+                                <option value="self_funding">自有资金 - 直接投资</option>
+                                <option value="domestic_fund">国内股权基金 - 专业投资</option>
+                                <option value="foreign_fund">国外基金 - 国际资本</option>
+                                <option value="strategic_investor">战略机构 - 产业协同</option>
+                                <option value="partnership">合伙机构 - 合作投资</option>
+                            </select>
+                        </div>
+
+                        <div class="channel-parameters" id="channel-parameters">
+                            <div class="input-group">
+                                <label class="input-label">
+                                    基金管理费率
+                                    <span class="tooltip">ℹ️
+                                        <span class="tooltiptext">年度管理费，按投资额计算</span>
+                                    </span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="fund_management_fee" class="input-field" value="2" min="0" max="5" step="0.1">
+                                    <span class="input-unit">%</span>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label">
+                                    业绩分成比例
+                                    <span class="tooltip">ℹ️
+                                        <span class="tooltiptext">基金收益分成比例</span>
+                                    </span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="fund_carried_interest" class="input-field" value="20" min="0" max="50" step="1">
+                                    <span class="input-unit">%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 结果显示面板 -->
+            <div class="panel">
+                <h2 class="panel-title">📊 分析结果</h2>
+
+                <!-- 项目分析结果模块 -->
+                <div class="results-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">🏢</span>
+                        项目分析结果
+                        <span class="section-subtitle">项目整体财务表现</span>
+                    </h3>
+                    <div class="results-grid">
+                        <div class="result-card result-highlight">
+                            <div class="result-value" id="irr_result">42.8%</div>
+                            <div class="result-label">项目IRR</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="npv_result">12.4亿</div>
+                            <div class="result-label">项目NPV</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="total_investment_result">28.0亿</div>
+                            <div class="result-label">项目总投资</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="payback_result">4.5年</div>
+                            <div class="result-label">项目回报期</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="annual_revenue_result">52.6亿</div>
+                            <div class="result-label">年均营业收入</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="annual_cost_result">--亿</div>
+                            <div class="result-label">年均营业成本</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="annual_distributable_profit_result">--亿</div>
+                            <div class="result-label">年均可分配利润</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="total_profit_result">121.9亿</div>
+                            <div class="result-label">10年项目累计利润</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 分隔线 -->
+                <div class="section-divider">
+                    <div class="divider-line"></div>
+                    <div class="divider-text">
+                        <span class="divider-icon">💰</span>
+                        基于投资份额和分红参数计算
+                    </div>
+                    <div class="divider-line"></div>
+                </div>
+
+                <!-- 投资回报分析模块 -->
+                <div class="results-section" id="investment-results-section" style="display: none;">
+                    <h3 class="section-title">
+                        <span class="section-icon">💵</span>
+                        投资回报分析
+                        <span class="section-subtitle">您的实际投资回报（基于项目计算结果）</span>
+                    </h3>
+                    <div class="results-grid">
+                        <div class="result-card result-highlight">
+                            <div class="result-value" id="investor_irr_result">--%</div>
+                            <div class="result-label">投资者IRR</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="asset_present_value_result">--亿</div>
+                            <div class="result-label">资产现值</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="actual_investment_result">--亿</div>
+                            <div class="result-label">实际投入成本</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="investor_payback_result">--年</div>
+                            <div class="result-label">投资回报期</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="after_tax_dividend_result">--亿</div>
+                            <div class="result-label">年均税后分红</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" id="total_investor_profit_result">--亿</div>
+                            <div class="result-label">10年投资者累计利润</div>
+                        </div>
+                    </div>
+
+                    </div>
+
+                <div class="formula-display">
+                    <strong>📐 计算公式说明：</strong><br>
+                    <strong>项目层面：</strong>IRR = 使NPV=0的折现率 | NPV = Σ(CFt / (1+r)^t) - 初始投资<br>
+                    <strong>投资者层面：</strong>投资者IRR = 基于税后分红计算 | 投资回报率 = 累计税后分红 / 实际投资额<br>
+                    <strong>分红计算：</strong>税后分红 = 项目净利润 × 投资份额 × (1 - 个人所得税率)
+                </div>
+            </div>
+        </div>
+
+        <!-- 现金流图表 -->
+        <div class="chart-container">
+            <h3 class="chart-title">💰 10年项目经营现金流预测</h3>
+            <div class="chart-description">
+                <p><strong>数据说明：</strong>图表显示的是<strong>项目经营现金流</strong>（税后净利润 + 折旧费用），不是投资者个人分红收入。</p>
+                <p><strong>用途：</strong>用于计算项目整体IRR和NPV，反映项目经营产生的实际现金流入。</p>
+            </div>
+            <div class="simple-chart">
+                <div class="bar-container" id="cashflow_chart">
+                    <!-- 动态生成的柱状图 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 参数默认值
+        const defaultParameters = {
+            base_evs: 1500,
+            growth_rate: 25,
+            penetration_rate: 35,
+            guns_per_station: 12,
+            utilization_rate: 30,
+            daily_hours: 20,
+            gun_power: 180,
+            charging_price: 0.95,
+            price_spread: 0.55,
+            electricity_cost: 0.4,
+            labor_cost: 120,
+            rent_cost: 80,
+            total_stations: 1000,
+            construction_cost: 280,
+            subsidy_rate: 10,
+            discount_rate: 12,
+            investment_share: 100,
+            corporate_tax_rate: 25,
+            personal_tax_rate: 20,
+            capital_surplus_rate: 20,
+            distributable_profit_rate: 70,
+            investor_corporate_tax_rate: 0
+        };
+
+        // 情景参数 - 包含波动范围
+        const scenarios = {
+            conservative: {
+                utilization_rate: 20,
+                charging_price: 0.75,
+                price_spread: 0.45,
+                total_stations: 800,
+                construction_cost: 320,
+                volatility: {
+                    revenue: [-0.15, 0.05],  // 收入波动范围：-15%到+5%
+                    cost: [0.05, 0.15],     // 成本波动范围：+5%到+15%
+                    utilization: [-0.1, 0.03] // 利用率波动：-10%到+3%
+                }
+            },
+            base: {
+                ...defaultParameters,
+                volatility: {
+                    revenue: [-0.08, 0.12],  // 收入波动范围：-8%到+12%
+                    cost: [0.02, 0.10],     // 成本波动范围：+2%到+10%
+                    utilization: [-0.05, 0.08] // 利用率波动：-5%到+8%
+                }
+            },
+            optimistic: {
+                utilization_rate: 40,
+                charging_price: 1.15,
+                price_spread: 0.65,
+                total_stations: 1200,
+                construction_cost: 250,
+                volatility: {
+                    revenue: [0.05, 0.20],   // 收入波动范围：+5%到+20%
+                    cost: [-0.02, 0.08],    // 成本波动范围：-2%到+8%
+                    utilization: [0.02, 0.12]  // 利用率波动：+2%到+12%
+                }
+            }
+        };
+
+        // 验证计算逻辑的测试函数
+        function validateCalculationLogic() {
+            console.log('🔍 验证计算逻辑...');
+
+            // 测试案例：投资份额40%
+            const testParams = {
+                investment_share: 0.4,
+                total_investment: 1000000000, // 10亿
+                yearly_profits: [100000000, 150000000, 200000000, 250000000, 300000000], // 前5年利润
+                corporate_tax_rate: 0.25,
+                personal_tax_rate: 0.20
+            };
+
+            // 计算项目现金流（税后净利润）
+            const project_cashflows = testParams.yearly_profits.map(profit =>
+                profit * (1 - testParams.corporate_tax_rate)
+            );
+
+            // 计算投资者现金流（税后分红）
+            const investor_cashflows = project_cashflows.map(profit =>
+                profit * testParams.investment_share * (1 - testParams.personal_tax_rate)
+            );
+
+            // 计算回收期
+            let project_payback = 0;
+            let project_cumulative = -testParams.total_investment;
+
+            let investor_payback = 0;
+            let investor_cumulative = -testParams.total_investment * testParams.investment_share;
+
+            for (let year = 0; year < project_cashflows.length; year++) {
+                project_cumulative += project_cashflows[year];
+                if (project_cumulative >= 0 && project_payback === 0) {
+                    project_payback = year + 1;
+                }
+
+                investor_cumulative += investor_cashflows[year];
+                if (investor_cumulative >= 0 && investor_payback === 0) {
+                    investor_payback = year + 1;
+                }
+            }
+
+            console.log('📊 验证结果：');
+            console.log(`投资份额：${testParams.investment_share * 100}%`);
+            console.log(`项目回收期：${project_payback}年`);
+            console.log(`投资者回收期：${investor_payback}年`);
+            console.log(`✅ 验证通过：投资者回收期应该 >= 项目回收期`);
+
+            return investor_payback >= project_payback;
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeInputs();
+
+            // 初始化投资参数
+            updateTimingParameters();
+            updateChannelParameters();
+
+            // 隐藏投资结果区域
+            document.getElementById('investment-results-section').style.display = 'none';
+
+            // 运行验证测试
+            const isValid = validateCalculationLogic();
+            if (!isValid) {
+                console.error('❌ 计算逻辑验证失败！');
+            }
+        });
+
+        // 初始化输入控件
+        function initializeInputs() {
+            // 绑定滑块事件
+            const sliders = [
+                {slider: 'growth_rate_slider', input: 'growth_rate'},
+                {slider: 'utilization_rate_slider', input: 'utilization_rate'},
+                {slider: 'charging_price_slider', input: 'charging_price'},
+                {slider: 'distributable_profit_rate_slider', input: 'distributable_profit_rate'},
+                {slider: 'investment_share_slider', input: 'investment_share'}
+            ];
+
+            sliders.forEach(({slider, input}) => {
+                const sliderEl = document.getElementById(slider);
+                const inputEl = document.getElementById(input);
+
+                if (sliderEl && inputEl) {
+                    sliderEl.addEventListener('input', function() {
+                        inputEl.value = this.value;
+                    });
+
+                    inputEl.addEventListener('input', function() {
+                        sliderEl.value = this.value;
+                    });
+                }
+            });
+
+            // 为投资参数添加自动重新计算功能
+            const investmentInputs = [
+                'investment_share', 'investment_timing',
+                'investment_channel', 'fund_management_fee', 'fund_carried_interest',
+                'investor_corporate_tax_rate', 'personal_tax_rate'
+            ];
+
+            investmentInputs.forEach(inputId => {
+                const element = document.getElementById(inputId);
+                console.log(`绑定事件监听器到: ${inputId}, 元素:`, element);
+                if (element) {
+                    // 监听多种事件以确保参数变化被捕获
+                    const handleInputChange = function() {
+                        console.log(`参数变化检测到: ${inputId} = ${this.value}`);
+                        // 如果项目计算已完成，自动重新计算投资结果
+                        if (projectCalculationResults) {
+                            console.log('触发投资回报分析重新计算');
+                            calculateInvestmentResults();
+                        } else {
+                            console.log('项目计算结果不存在，无法重新计算投资回报');
+                        }
+                    };
+
+                    element.addEventListener('input', handleInputChange);
+                    element.addEventListener('change', handleInputChange);
+                } else {
+                    console.error(`找不到元素: ${inputId}`);
+                }
+            });
+        }
+
+        // 切换项目参数标签页
+        function switchProjectTab(tabName) {
+            // 隐藏所有项目标签内容
+            document.querySelectorAll('#market-tab, #operation-tab, #cost-tab, #production-tab, #decision-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // 移除所有项目标签的激活状态
+            document.querySelectorAll('.parameters-section:first-child .tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // 显示选中的标签内容
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // 激活选中的标签
+            event.target.classList.add('active');
+        }
+
+        // 切换投资参数标签页
+        function switchInvestmentTab(tabName) {
+            // 隐藏所有投资标签内容
+            document.querySelectorAll('#share-tab, #timing-tab, #channel-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // 移除所有投资标签的激活状态
+            document.querySelectorAll('.parameters-section:last-child .tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // 显示选中的标签内容
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // 激活选中的标签
+            event.target.classList.add('active');
+        }
+
+        // 更新投入时机参数
+        function updateTimingParameters() {
+            const timing = document.getElementById('investment_timing').value;
+            const timingParams = document.getElementById('timing-parameters');
+
+            let html = '';
+            switch(timing) {
+                case 'preparation':
+                    html = `
+                        <div class="input-group">
+                            <label class="input-label">
+                                筹备期投资溢价
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">早期投资风险溢价，通常为负值（折价）</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="preparation_premium" class="input-field" value="-20" min="-50" max="0" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'production':
+                    html = `
+                        <div class="input-group">
+                            <label class="input-label">
+                                投产期投资溢价
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">建设期投资溢价，通常有小幅溢价</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="production_premium" class="input-field" value="5" min="-10" max="20" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'payback':
+                    html = `
+                        <div class="input-group">
+                            <label class="input-label">
+                                回本期投资溢价
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">开始盈利期的投资溢价</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="payback_premium" class="input-field" value="15" min="0" max="50" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'listing':
+                    html = `
+                        <div class="input-group">
+                            <label class="input-label">
+                                上市期投资溢价
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">IPO前投资溢价，较高溢价</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="listing_premium" class="input-field" value="40" min="20" max="100" step="5">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'securitization':
+                    html = `
+                        <div class="input-group">
+                            <label class="input-label">
+                                证券化期投资溢价
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">成熟期投资溢价，稳定溢价</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="securitization_premium" class="input-field" value="80" min="50" max="150" step="5">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+
+            timingParams.innerHTML = html;
+        }
+
+        // 更新投资渠道参数
+        function updateChannelParameters() {
+            const channel = document.getElementById('investment_channel').value;
+            const channelParams = document.getElementById('channel-parameters');
+
+            let html = '';
+            switch(channel) {
+                case 'self_funding':
+                    html = `
+                        <div class="input-group">
+                            <label class="input-label">
+                                资金成本调整
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">自有资金的机会成本调整</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="self_funding_cost" class="input-field" value="0" min="0" max="2" step="0.1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'domestic_fund':
+                    html = `
+                        <div class="input-group">
+                            <label class="input-label">
+                                基金管理费率
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">年度管理费，按投资额计算</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="domestic_management_fee" class="input-field" value="2" min="0" max="5" step="0.1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">
+                                业绩分成比例
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">基金收益分成比例</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="domestic_carried_interest" class="input-field" value="20" min="0" max="50" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'foreign_fund':
+                    html = `
+                        <div class="input-group">
+                            <label class="input-label">
+                                基金管理费率
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">国外基金管理费率通常更高</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="foreign_management_fee" class="input-field" value="2.5" min="0" max="6" step="0.1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">
+                                业绩分成比例
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">国外基金收益分成比例</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="foreign_carried_interest" class="input-field" value="25" min="0" max="50" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">
+                                汇率风险溢价
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">国外投资的汇率风险补偿</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="foreign_exchange_risk" class="input-field" value="3" min="0" max="10" step="0.5">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'strategic_investor':
+                    html = `
+                        <div class="input-group">
+                            <label class="input-label">
+                                战略协同价值
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">战略投资带来的协同效应价值</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="strategic_synergy_value" class="input-field" value="10" min="0" max="30" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">
+                                管理参与成本
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">战略投资者参与管理的成本</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="strategic_management_cost" class="input-field" value="1" min="0" max="3" step="0.1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'partnership':
+                    html = `
+                        <div class="input-group">
+                            <label class="input-label">
+                                合伙管理费
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">合伙机构的管理费用</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="partnership_management_fee" class="input-field" value="1.5" min="0" max="4" step="0.1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">
+                                合伙分成比例
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">合伙机构的收益分成</span>
+                                </span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="partnership_carried_interest" class="input-field" value="15" min="0" max="40" step="1">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+
+            channelParams.innerHTML = html;
+        }
+
+        // 加载情景参数
+        function loadScenario(scenarioName) {
+            const scenario = scenarios[scenarioName];
+
+            Object.keys(scenario).forEach(key => {
+                const input = document.getElementById(key);
+                if (input) {
+                    input.value = scenario[key];
+
+                    // 同步滑块
+                    const slider = document.getElementById(key + '_slider');
+                    if (slider) {
+                        slider.value = scenario[key];
+                    }
+                }
+            });
+
+            calculateResults();
+        }
+
+        // 重置参数
+        function resetParameters() {
+            loadScenario('base');
+        }
+
+        // 获取投资时机溢价
+        function getTimingPremium() {
+            const timing = document.getElementById('investment_timing').value;
+            let premium = 0;
+
+            switch(timing) {
+                case 'preparation':
+                    premium = parseFloat(document.getElementById('preparation_premium')?.value || 0);
+                    break;
+                case 'production':
+                    premium = parseFloat(document.getElementById('production_premium')?.value || 0);
+                    break;
+                case 'payback':
+                    premium = parseFloat(document.getElementById('payback_premium')?.value || 0);
+                    break;
+                case 'listing':
+                    premium = parseFloat(document.getElementById('listing_premium')?.value || 0);
+                    break;
+                case 'securitization':
+                    premium = parseFloat(document.getElementById('securitization_premium')?.value || 0);
+                    break;
+            }
+
+            return premium / 100;
+        }
+
+        // 全局变量存储项目计算结果
+        let projectCalculationResults = null;
+
+        // 第一步：计算项目分析结果
+        function calculateProjectResults() {
+            const params = getParameters();
+            // 只获取项目相关参数，忽略投资参数
+            const projectParams = getProjectParameters(params);
+
+            projectCalculationResults = performProjectCalculations(projectParams);
+            displayProjectResults(projectCalculationResults);
+            updateCashflowChart(projectCalculationResults.project_cashflows);
+
+            // 更新UI状态
+            updateProjectCalculationUI(projectCalculationResults);
+            enableInvestmentCalculation();
+        }
+
+        // 第二步：计算投资回报结果
+        function calculateInvestmentResults() {
+            console.log('=== 开始计算投资回报分析 ===');
+            if (!projectCalculationResults) {
+                alert('请先完成项目分析计算');
+                return;
+            }
+
+            // 应用当前选择的投资时点设置到实际参数中
+            applyInvestmentTimingToParameters(projectCalculationResults);
+
+            const params = getParameters();
+            console.log('投资计算参数:', {
+                personal_tax_rate: params.personal_tax_rate,
+                investor_corporate_tax_rate: params.investor_corporate_tax_rate,
+                investment_share: params.investment_share
+            });
+
+            // 基于项目结果进行投资计算
+            const investmentResults = performInvestmentCalculations(params, projectCalculationResults);
+            console.log('投资计算结果:', investmentResults);
+            displayInvestmentResults(investmentResults);
+
+            // 更新UI状态
+            updateInvestmentCalculationUI(investmentResults);
+        }
+
+        // 将投资时点设置应用到实际计算参数
+        function applyInvestmentTimingToParameters(projectResults) {
+            const timingType = document.getElementById('investment_timing').value;
+            let investmentYear = 1;
+
+            switch(timingType) {
+                case 'preparation':
+                    investmentYear = 1; // 筹备期：第1年
+                    break;
+                case 'production':
+                    investmentYear = 2; // 投产期：第2年
+                    break;
+                case 'payback':
+                    investmentYear = projectResults.payback_period; // 回报期：项目计算回收期
+                    break;
+                case 'listing':
+                    investmentYear = projectResults.payback_period + 2; // IPO：回报期后2年
+                    break;
+                case 'securitization':
+                    investmentYear = projectResults.payback_period + 5; // 证券化：回报期后5年
+                    break;
+                default:
+                    investmentYear = 1;
+            }
+
+            // 实际更新投资年份输入框（用于计算）
+            document.getElementById('investment_year').value = investmentYear.toFixed(1);
+
+            // 更新提示信息
+            const hintElement = document.getElementById('timing_hint');
+            if (hintElement) {
+                hintElement.textContent = `已应用投资时点：第${investmentYear.toFixed(1)}年`;
+            }
+
+            console.log(`投资时点已应用到计算: ${timingType} -> 第${investmentYear.toFixed(1)}年`);
+        }
+
+        // 获取项目相关参数
+        function getProjectParameters(allParams) {
+            return {
+                base_evs: allParams.base_evs,
+                growth_rate: allParams.growth_rate,
+                penetration_rate: allParams.penetration_rate,
+                guns_per_station: allParams.guns_per_station,
+                utilization_rate: allParams.utilization_rate,
+                daily_hours: allParams.daily_hours,
+                gun_power: allParams.gun_power,
+                charging_price: allParams.charging_price,
+                price_spread: allParams.price_spread,
+                electricity_cost: allParams.electricity_cost,
+                labor_cost: allParams.labor_cost,
+                rent_cost: allParams.rent_cost,
+                total_stations: allParams.total_stations,
+                construction_cost: allParams.construction_cost,
+                subsidy_rate: allParams.subsidy_rate,
+                discount_rate: allParams.discount_rate,
+                corporate_tax_rate: allParams.corporate_tax_rate,
+                personal_tax_rate: allParams.personal_tax_rate,
+                capital_surplus_rate: allParams.capital_surplus_rate,
+                distributable_profit_rate: allParams.distributable_profit_rate,
+                investor_corporate_tax_rate: allParams.investor_corporate_tax_rate,
+                // 添加投资相关参数，因为项目计算阶段需要计算投资者现金流
+                investment_share: allParams.investment_share,
+                investment_timing: allParams.investment_timing,
+                investment_year: allParams.investment_year,
+                timing_premium: allParams.timing_premium,
+                investment_channel: allParams.investment_channel
+            };
+        }
+
+        // 获取参数值
+        function getParameters() {
+            // 获取基础参数
+            const baseParams = {
+                base_evs: parseFloat(document.getElementById('base_evs').value),
+                growth_rate: parseFloat(document.getElementById('growth_rate').value),
+                penetration_rate: parseFloat(document.getElementById('penetration_rate').value),
+                guns_per_station: parseInt(document.getElementById('guns_per_station').value),
+                utilization_rate: parseFloat(document.getElementById('utilization_rate').value) / 100,
+                daily_hours: parseFloat(document.getElementById('daily_hours').value),
+                gun_power: parseFloat(document.getElementById('gun_power').value),
+                charging_price: parseFloat(document.getElementById('charging_price').value),
+                price_spread: parseFloat(document.getElementById('price_spread').value),
+                electricity_cost: parseFloat(document.getElementById('electricity_cost').value),
+                labor_cost: parseFloat(document.getElementById('labor_cost').value) * 10000,
+                rent_cost: parseFloat(document.getElementById('rent_cost').value) * 10000,
+                total_stations: parseInt(document.getElementById('total_stations').value),
+                construction_cost: parseFloat(document.getElementById('construction_cost').value) * 10000,
+                subsidy_rate: parseFloat(document.getElementById('subsidy_rate').value) / 100,
+                discount_rate: parseFloat(document.getElementById('discount_rate').value) / 100,
+                corporate_tax_rate: parseFloat(document.getElementById('corporate_tax_rate').value) / 100,
+                personal_tax_rate: parseFloat(document.getElementById('personal_tax_rate').value) / 100,
+                capital_surplus_rate: parseFloat(document.getElementById('capital_surplus_rate').value) / 100,
+                distributable_profit_rate: parseFloat(document.getElementById('distributable_profit_rate').value) / 100,
+                investor_corporate_tax_rate: parseFloat(document.getElementById('investor_corporate_tax_rate').value) / 100
+            };
+
+            // 获取投资参数
+            const investmentParams = {
+                investment_share: parseFloat(document.getElementById('investment_share').value) / 100,
+                investment_timing: document.getElementById('investment_timing').value,
+                investment_channel: document.getElementById('investment_channel').value,
+                investment_year: parseFloat(document.getElementById('investment_year').value),
+                timing_premium: getTimingPremium()
+            };
+
+            // 获取渠道相关参数
+            const channelParams = getChannelParameters(investmentParams.investment_channel);
+
+            return { ...baseParams, ...investmentParams, ...channelParams };
+        }
+
+        // 获取渠道相关参数
+        function getChannelParameters(channel) {
+            const params = {};
+
+            switch(channel) {
+                case 'self_funding':
+                    params.fund_management_fee = parseFloat(document.getElementById('self_funding_cost').value) / 100;
+                    params.fund_carried_interest = 0;
+                    break;
+                case 'domestic_fund':
+                    params.fund_management_fee = parseFloat(document.getElementById('domestic_management_fee').value) / 100;
+                    params.fund_carried_interest = parseFloat(document.getElementById('domestic_carried_interest').value) / 100;
+                    break;
+                case 'foreign_fund':
+                    params.fund_management_fee = parseFloat(document.getElementById('foreign_management_fee').value) / 100;
+                    params.fund_carried_interest = parseFloat(document.getElementById('foreign_carried_interest').value) / 100;
+                    params.exchange_risk_premium = parseFloat(document.getElementById('foreign_exchange_risk').value) / 100;
+                    break;
+                case 'strategic_investor':
+                    params.strategic_synergy = parseFloat(document.getElementById('strategic_synergy_value').value) / 100;
+                    params.management_cost = parseFloat(document.getElementById('strategic_management_cost').value) / 100;
+                    params.fund_management_fee = params.management_cost;
+                    params.fund_carried_interest = 0;
+                    break;
+                case 'partnership':
+                    params.fund_management_fee = parseFloat(document.getElementById('partnership_management_fee').value) / 100;
+                    params.fund_carried_interest = parseFloat(document.getElementById('partnership_carried_interest').value) / 100;
+                    break;
+            }
+
+            return params;
+        }
+
+        // 辅助计算函数 - 在performCalculations之前定义
+        // 计算考虑时机的资产现值
+        function calculateAssetPresentValue(total_investment, investment_year, discount_rate) {
+            // 简化计算：假设资产价值按投资年份折现
+            return total_investment / Math.pow(1 + discount_rate, investment_year);
+        }
+
+        // 计算渠道费用
+        function calculateChannelCosts(actual_investment, params) {
+            const costs = {
+                total_annual_costs: 0,
+                management_costs: [],
+                carried_interests: []
+            };
+
+            // 管理费（通常按投资额的年费率计算）
+            if (params.fund_management_fee) {
+                const annual_management_fee = actual_investment * params.fund_management_fee;
+                costs.total_annual_costs += annual_management_fee;
+                costs.management_costs.push(annual_management_fee);
+            }
+
+            // 战略协同价值（如果是战略投资，则为正效益）
+            if (params.strategic_synergy) {
+                const strategic_benefit = actual_investment * params.strategic_synergy;
+                costs.total_annual_costs -= strategic_benefit; // 负值表示收益
+            }
+
+            return costs;
+        }
+
+        // 计算调整后的投资者现金流（考虑渠道分成）
+        function calculateAdjustedInvestorCashflows(investor_cashflows, params) {
+            console.log('计算调整后投资者现金流 - 输入:', investor_cashflows, '参数:', params);
+
+            const adjusted_cashflows = [];
+
+            // 安全检查
+            const investment_share = params.investment_share || 0.01; // 防止除零
+            const personal_tax_rate = params.personal_tax_rate;
+            const investor_corporate_tax_rate = params.investor_corporate_tax_rate;
+            const fund_management_fee = params.fund_management_fee || 0;
+            const fund_carried_interest = params.fund_carried_interest || 0;
+
+            console.log('详细参数检查:', {
+                investment_share: investment_share,
+                personal_tax_rate: personal_tax_rate,
+                investor_corporate_tax_rate: investor_corporate_tax_rate,
+                fund_management_fee: fund_management_fee,
+                fund_carried_interest: fund_carried_interest
+            });
+
+            for (let i = 0; i < investor_cashflows.length; i++) {
+                let adjusted_cashflow = investor_cashflows[i];
+                console.log(`第${i+1}年原始现金流: ${adjusted_cashflow}`);
+
+                // 验证原始现金流
+                if (isNaN(adjusted_cashflow) || adjusted_cashflow < 0) {
+                    console.error(`第${i+1}年现金流异常: ${adjusted_cashflow}`);
+                    adjusted_cashflow = 0;
+                }
+
+                // 投资者公司所得税
+                if (investor_corporate_tax_rate > 0) {
+                    const investor_corporate_tax = adjusted_cashflow * investor_corporate_tax_rate;
+                    adjusted_cashflow -= investor_corporate_tax;
+                    console.log(`第${i+1}年投资者公司所得税: ${investor_corporate_tax}, 税后: ${adjusted_cashflow}`);
+                }
+
+                // 个人所得税
+                if (personal_tax_rate > 0) {
+                    const personal_tax = adjusted_cashflow * personal_tax_rate;
+                    adjusted_cashflow -= personal_tax;
+                    console.log(`第${i+1}年个人所得税: ${personal_tax}, 最终到手: ${adjusted_cashflow}`);
+                }
+
+                // 简化管理费计算：直接从税后分红中扣除
+                if (fund_management_fee > 0 && i < 10) { // 前10年收取管理费
+                    const management_fee = adjusted_cashflow * fund_management_fee;
+                    adjusted_cashflow -= management_fee;
+                    console.log(`第${i+1}年管理费: ${management_fee}, 调整后现金流: ${adjusted_cashflow}`);
+                }
+
+                // 简化业绩分成：如果收益率超过15%，则超额部分收取分成
+                if (fund_carried_interest > 0 && i >= 4 && adjusted_cashflow > 0) { // 从第4年开始收取业绩分成
+                    const expected_return = 0.15; // 期望年化收益率15%
+
+                    // 避免复杂的投资本金估算，直接按固定基准计算
+                    const benchmark_cashflow = 100000000; // 1亿作为基准
+                    const expected_cashflow = benchmark_cashflow * expected_return * investment_share;
+
+                    if (adjusted_cashflow > expected_cashflow) {
+                        const excess_return = adjusted_cashflow - expected_cashflow;
+                        const carried_interest = excess_return * fund_carried_interest;
+                        adjusted_cashflow -= carried_interest;
+                        console.log(`第${i+1}年业绩分成: ${carried_interest}, 调整后现金流: ${adjusted_cashflow}`);
+                    }
+                }
+
+                // 确保值不是负数或NaN
+                adjusted_cashflow = Math.max(0, adjusted_cashflow || 0);
+                adjusted_cashflows.push(adjusted_cashflow);
+                console.log(`第${i+1}年最终调整后现金流: ${adjusted_cashflow}`);
+            }
+
+            console.log('计算调整后投资者现金流 - 输出:', adjusted_cashflows);
+            console.log('现金流总额:', adjusted_cashflows.reduce((sum, cf) => sum + cf, 0));
+            return adjusted_cashflows;
+        }
+
+        // 执行项目财务计算
+        function performProjectCalculations(params) {
+            console.log('=== 开始项目财务计算 ===');
+            console.log('项目计算参数:', params);
+            console.log('投资相关参数检查:', {
+                investment_share: params.investment_share,
+                personal_tax_rate: params.personal_tax_rate,
+                corporate_tax_rate: params.corporate_tax_rate,
+                discount_rate: params.discount_rate
+            });
+
+            // 获取当前情景的波动参数
+            const currentScenario = getCurrentScenario();
+            const volatility = currentScenario.volatility;
+
+            // 单站计算
+            const daily_charging_hours = 24 * params.utilization_rate;
+            const daily_revenue_per_station = params.guns_per_station * params.gun_power *
+                                          daily_charging_hours * params.charging_price;
+            const annual_revenue_per_station = daily_revenue_per_station * 365;
+
+            // 单站成本计算
+            const annual_electricity_cost = params.guns_per_station * params.gun_power *
+                                          daily_charging_hours * 365 * params.electricity_cost;
+            const annual_opex_per_station = annual_electricity_cost + params.labor_cost +
+                                           params.rent_cost + annual_revenue_per_station * 0.15; // 其他费用15%
+
+            // 项目级计算
+            const total_investment = params.total_stations * params.construction_cost * (1 - params.subsidy_rate);
+
+            // 10年现金流预测（考虑情景波动）
+            const project_cashflows = [];  // 项目现金流（税后净利润）
+            const investor_cashflows = []; // 投资者现金流（税后分红）
+            const yearly_details = [];
+
+            for (let year = 1; year <= 10; year++) {
+                // 市场增长因素
+                const market_growth = 1 + (params.growth_rate / 100);
+                const cumulative_growth = Math.pow(market_growth, year - 1);
+
+                // 应用随机波动
+                const revenue_volatility = getRandomInRange(volatility.revenue[0], volatility.revenue[1]);
+                const cost_volatility = getRandomInRange(volatility.cost[0], volatility.cost[1]);
+                const utilization_volatility = getRandomInRange(volatility.utilization[0], volatility.utilization[1]);
+
+                // 调整后的利用率
+                const adjusted_utilization = params.utilization_rate * (1 + utilization_volatility);
+
+                // 年度收入计算
+                const year_revenue_per_station = params.guns_per_station * params.gun_power *
+                                               (24 * adjusted_utilization) * params.charging_price * 365;
+                const year_total_revenue = year_revenue_per_station * params.total_stations * cumulative_growth * (1 + revenue_volatility);
+
+                // 年度成本计算
+                const year_electricity_cost = params.guns_per_station * params.gun_power *
+                                             (24 * adjusted_utilization) * 365 * params.electricity_cost *
+                                             params.total_stations * cumulative_growth * (1 + cost_volatility);
+
+                const year_labor_cost = params.labor_cost * params.total_stations * Math.pow(1.05, year - 1); // 人工成本年增5%
+                const year_rent_cost = params.rent_cost * params.total_stations * Math.pow(1.03, year - 1); // 租金成本年增3%
+                const year_other_cost = year_total_revenue * 0.15; // 其他费用15%
+
+                const year_total_cost = year_electricity_cost + year_labor_cost + year_rent_cost + year_other_cost;
+
+                // 税前利润
+                const year_pre_tax_profit = year_total_revenue - year_total_cost;
+
+                // 企业所得税
+                const year_corporate_tax = Math.max(0, year_pre_tax_profit * params.corporate_tax_rate);
+
+                // 税后净利润（项目现金流）
+                const year_net_profit = year_pre_tax_profit - year_corporate_tax;
+
+                // 计算可分配利润（扣除资本公积后）
+                const capital_surplus = year_net_profit * params.capital_surplus_rate;
+                const distributable_profit = year_net_profit - capital_surplus;
+
+                // 投资者分红（只有可分配利润为正数时才分红）
+                const year_dividend = Math.max(0, distributable_profit) * params.distributable_profit_rate * params.investment_share;
+                console.log(`第${year}年分红: net_profit=${year_net_profit}, distributable_profit=${distributable_profit}, dividend=${year_dividend}`);
+
+                project_cashflows.push(year_net_profit);
+                investor_cashflows.push(year_dividend);
+                yearly_details.push({
+                    year: year,
+                    revenue: year_total_revenue,
+                    cost: year_total_cost,
+                    pre_tax_profit: year_pre_tax_profit,
+                    corporate_tax: year_corporate_tax,
+                    net_profit: year_net_profit,
+                    capital_surplus: capital_surplus,
+                    distributable_profit: distributable_profit,
+                    dividend: year_dividend,
+                    utilization_rate: adjusted_utilization * 100
+                });
+            }
+
+            // 计算项目IRR（基于项目现金流）
+            const project_all_cashflows = [-total_investment, ...project_cashflows];
+            const irr = calculateIRR(project_all_cashflows);
+
+            // 计算项目NPV
+            const npv = calculateNPV(project_all_cashflows, params.discount_rate);
+
+            // 计算项目投资回收期（基于项目现金流）
+            let payback_period = 0;
+            let cumulative = -total_investment;
+            for (let year = 1; year <= 10; year++) {
+                cumulative += project_cashflows[year - 1];
+                if (cumulative >= 0) {
+                    payback_period = year;
+                    break;
+                }
+            }
+
+            // 10年累计利润和分红
+            const total_10year_profit = yearly_details.reduce((sum, detail) => sum + detail.net_profit, 0);
+            const total_10year_dividend = yearly_details.reduce((sum, detail) => sum + detail.dividend, 0);
+            const total_10year_cost = yearly_details.reduce((sum, detail) => sum + detail.cost, 0);
+            const total_10year_distributable_profit = yearly_details.reduce((sum, detail) => sum + detail.distributable_profit, 0);
+
+            // 年均计算（统一使用10年平均值）
+            const annual_net_profit = total_10year_profit / 10;
+            const annual_cost = total_10year_cost / 10;
+            const annual_revenue = annual_net_profit / (1 - params.corporate_tax_rate) + annual_cost;
+            const annual_distributable_profit = total_10year_distributable_profit / 10;
+
+            // 投资者层面计算
+            // 1. 计算考虑时机的资产现值（基于投资份额）
+            const asset_present_value = calculateAssetPresentValue(total_investment * params.investment_share, params.investment_year, params.discount_rate);
+
+            // 2. 计算考虑溢价的投资价格
+            const premium_adjusted_price = asset_present_value * (1 + params.timing_premium);
+
+            // 3. 计算投资者实际投资额（已经包含投资份额，所以不再乘以investment_share）
+            const actual_investment = premium_adjusted_price;
+
+            // 4. 计算渠道费用
+            const channel_costs = calculateChannelCosts(actual_investment, params);
+
+            // 5. 计算总投入成本
+            const total_investor_cost = actual_investment + channel_costs.total_annual_costs;
+
+            // 6. 重新计算投资者现金流（考虑渠道分成）
+            const adjusted_investor_cashflows = calculateAdjustedInvestorCashflows(investor_cashflows, params);
+
+            // 计算投资者IRR
+            const investor_all_cashflows = [-total_investor_cost, ...adjusted_investor_cashflows];
+            const investor_irr = calculateIRR(investor_all_cashflows);
+
+          
+            // 计算投资者回收期
+            let investor_payback_period = 0;
+            let investor_cumulative = -total_investor_cost;
+            for (let year = 1; year <= 10; year++) {
+                investor_cumulative += adjusted_investor_cashflows[year - 1];
+                if (investor_cumulative >= 0) {
+                    investor_payback_period = year;
+                    break;
+                }
+            }
+
+            // 10年累计税后分红（调整后）
+            const total_10year_after_tax_dividend = adjusted_investor_cashflows.reduce((sum, cf) => sum + cf, 0);
+
+            // 年税后分红（使用10年平均值，更具代表性）
+            const annual_after_tax_dividend = total_10year_after_tax_dividend / 10;
+
+            // 投资回报率
+            const roi = (total_10year_after_tax_dividend / total_investor_cost) * 100;
+
+            // 计算额外指标
+            const premium_impact = ((premium_adjusted_price - total_investment) / total_investment) * 100;
+            const channel_cost_impact = (channel_costs.total_annual_costs / actual_investment) * 100;
+            const strategic_value = params.strategic_synergy ? params.strategic_synergy * 100 : 0;
+
+            return {
+                irr: irr,
+                npv: npv,
+                payback_period: payback_period,
+                total_investment: total_investment,
+                annual_revenue: annual_revenue,
+                annual_cost: annual_cost,
+                annual_distributable_profit: annual_distributable_profit,
+                annual_after_tax_dividend: annual_after_tax_dividend,
+                total_10year_profit: total_10year_profit,
+                total_10year_dividend: total_10year_dividend,
+                total_10year_after_tax_dividend: total_10year_after_tax_dividend,
+                project_cashflows: project_cashflows,
+                investor_cashflows: investor_cashflows,
+                yearly_details: yearly_details
+            };
+        }
+
+        // 执行投资回报计算（基于项目结果）
+        function performInvestmentCalculations(params, projectResults) {
+            console.log('开始投资回报计算，项目结果:', projectResults);
+            console.log('投资参数:', params);
+
+            try {
+                // 参数验证和默认值
+                if (!projectResults || !projectResults.total_investment) {
+                    console.error('项目结果无效');
+                    return getDefaultInvestmentResults();
+                }
+
+                if (!projectResults.investor_cashflows || projectResults.investor_cashflows.length === 0) {
+                    console.error('投资者现金流数据无效');
+                    return getDefaultInvestmentResults();
+                }
+
+                // 安全参数处理
+                const safeParams = {
+                    investment_year: params.investment_year || 1,
+                    timing_premium: params.timing_premium || 0,
+                    investment_share: params.investment_share || 0.01,
+                    personal_tax_rate: params.personal_tax_rate,
+                    investor_corporate_tax_rate: params.investor_corporate_tax_rate,
+                    exchange_risk_premium: params.exchange_risk_premium || 0,
+                    fund_management_fee: params.fund_management_fee || 0,
+                    fund_carried_interest: params.fund_carried_interest || 0
+                };
+
+                console.log('安全处理后的参数:', safeParams);
+
+                // 1. 计算考虑时机的资产现值（基于投资时点折现和投资份额）
+                const asset_present_value = calculateAssetPresentValue(
+                    projectResults.total_investment * safeParams.investment_share,
+                    safeParams.investment_year,
+                    projectResults.discount_rate || 0.12
+                );
+                console.log('资产现值:', asset_present_value);
+
+                // 2. 计算考虑溢价的投资价格（反映不同投资时点的风险和机会成本）
+                const premium_adjusted_price = asset_present_value * (1 + safeParams.timing_premium);
+                console.log('溢价调整价格:', premium_adjusted_price);
+
+                // 3. 计算投资者实际投资额（已经包含投资份额，所以不再乘以investment_share）
+                const actual_investment = premium_adjusted_price;
+                console.log('投资者实际投资额:', actual_investment);
+
+                // 4. 计算渠道费用
+                const channel_costs = calculateChannelCosts(actual_investment, safeParams);
+                console.log('渠道费用:', channel_costs);
+
+                // 5. 计算总投入成本
+                const total_investor_cost = actual_investment + (channel_costs.total_annual_costs || 0);
+                console.log('总投入成本:', total_investor_cost);
+
+                // 6. 重新计算投资者现金流（考虑渠道分成）
+                const adjusted_investor_cashflows = calculateAdjustedInvestorCashflows(
+                    projectResults.investor_cashflows,
+                    safeParams
+                );
+                console.log('调整后投资者现金流:', adjusted_investor_cashflows);
+
+                // 验证现金流有效性
+                if (!adjusted_investor_cashflows || adjusted_investor_cashflows.length === 0) {
+                    console.error('调整后现金流无效');
+                    return getDefaultInvestmentResults();
+                }
+
+                // 7. 计算投资者IRR
+                const investor_all_cashflows = [-total_investor_cost, ...adjusted_investor_cashflows];
+                const investor_irr = calculateIRR(investor_all_cashflows);
+                console.log('投资者IRR:', investor_irr);
+
+                
+                // 9. 计算投资者回收期
+                let investor_payback_period = 0;
+                let investor_cumulative = -total_investor_cost;
+                for (let year = 1; year <= 10; year++) {
+                    investor_cumulative += adjusted_investor_cashflows[year - 1];
+                    if (investor_cumulative >= 0) {
+                        investor_payback_period = year;
+                        break;
+                    }
+                }
+
+                // 10. 10年累计税后分红（调整后）
+                const total_after_tax_dividend = adjusted_investor_cashflows.reduce((sum, cf) => sum + (cf || 0), 0);
+
+                // 11. 年税后分红（使用10年平均值，更具代表性）
+                const annual_after_tax_dividend = total_after_tax_dividend / 10;
+
+                // 12. 投资回报率（防止除零）
+                const roi = total_investor_cost > 0 ? (total_after_tax_dividend / total_investor_cost) * 100 : 0;
+
+                const result = {
+                    // 核心投资指标
+                    asset_present_value: asset_present_value || 0,
+                    investor_irr: investor_irr || 0,
+                    investor_payback_period: investor_payback_period || 10,
+                    actual_investment: total_investor_cost || 0,
+                    annual_after_tax_dividend: annual_after_tax_dividend || 0,
+                    roi: roi || 0,
+
+                    // 其他分析指标（用于显示）
+                    total_after_tax_dividend: total_after_tax_dividend || 0,
+                    premium_adjusted_price: premium_adjusted_price || 0,
+                    channel_costs: channel_costs || {}
+                };
+
+                console.log('投资计算完成，结果:', result);
+                return result;
+
+            } catch (error) {
+                console.error('投资计算过程中发生错误:', error);
+                return getDefaultInvestmentResults();
+            }
+        }
+
+        // 默认投资结果（当计算失败时使用）
+        function getDefaultInvestmentResults() {
+            return {
+                asset_present_value: 0,
+                investor_irr: 0,
+                investor_payback_period: 10,
+                actual_investment: 0,
+                annual_after_tax_dividend: 0,
+                roi: 0,
+                total_after_tax_dividend: 0,
+                premium_adjusted_price: 0,
+                channel_costs: {}
+            };
+        }
+
+        // 获取随机数（用于模拟波动）
+        function getRandomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        // 获取当前情景参数
+        function getCurrentScenario() {
+            // 根据当前参数值判断属于哪种情景
+            const utilization_rate = parseFloat(document.getElementById('utilization_rate').value);
+            const charging_price = parseFloat(document.getElementById('charging_price').value);
+
+            if (utilization_rate <= 25 && charging_price <= 0.8) {
+                return scenarios.conservative;
+            } else if (utilization_rate >= 35 && charging_price >= 1.1) {
+                return scenarios.optimistic;
+            } else {
+                return scenarios.base;
+            }
+        }
+
+        // 计算IRR
+        function calculateIRR(cashflows) {
+            // 简化的IRR计算（二分法）
+            let low = 0;
+            let high = 1;
+            let mid = 0;
+
+            for (let i = 0; i < 100; i++) {
+                mid = (low + high) / 2;
+                let npv = 0;
+
+                for (let j = 0; j < cashflows.length; j++) {
+                    npv += cashflows[j] / Math.pow(1 + mid, j);
+                }
+
+                if (Math.abs(npv) < 1000) {
+                    break;
+                }
+
+                if (npv > 0) {
+                    low = mid;
+                } else {
+                    high = mid;
+                }
+            }
+
+            return mid * 100; // 转换为百分比
+        }
+
+        // 计算NPV
+        function calculateNPV(cashflows, discount_rate) {
+            let npv = 0;
+            for (let i = 0; i < cashflows.length; i++) {
+                npv += cashflows[i] / Math.pow(1 + discount_rate, i);
+            }
+            return npv;
+        }
+
+        // 更新项目计算后的UI状态
+        function updateProjectCalculationUI(results) {
+            // 显示项目关键时点信息
+            document.getElementById('project-timing-info').style.display = 'block';
+            document.getElementById('project_payback_display').textContent = results.payback_period.toFixed(1) + '年';
+            document.getElementById('project_irr_display').textContent = results.irr.toFixed(1) + '%';
+            document.getElementById('project_npv_display').textContent = (results.npv / 100000000).toFixed(1) + '亿';
+
+            // 更新投资时机的默认值（基于项目回收期）
+            updateInvestmentTimingBasedOnProject(results);
+
+            // 更新状态提示
+            const statusElement = document.getElementById('calculation_status');
+            const statusText = statusElement.querySelector('.status-text');
+            statusText.textContent = '✅ 项目分析完成，可以调整投资参数进行多方案对比分析';
+            statusText.className = 'status-text success';
+        }
+
+        // 基于项目结果更新投资时机参数
+        function updateInvestmentTimingBasedOnProject(results) {
+            // 仅显示投资时点预览（不实际应用参数）
+            displayInvestmentTimingPreview(results);
+
+            // 更新回本期溢价（基于项目IRR）
+            const paybackPremium = Math.min(results.irr - 15, 50); // 以15%为基准，最高50%
+            const paybackPremiumElement = document.getElementById('payback_premium');
+            if (paybackPremiumElement) {
+                paybackPremiumElement.value = Math.max(paybackPremium, 10).toFixed(1);
+            }
+        }
+
+        // 根据投资时点类型更新投资年份
+        function updateInvestmentTimingByType(projectResults) {
+            const timingType = document.getElementById('investment_timing').value;
+            let investmentYear = 1; // 默认值
+            let hintText = '';
+
+            switch(timingType) {
+                case 'preparation':
+                    investmentYear = 1; // 筹备期：第1年
+                    hintText = '筹备期投资时点：第1年';
+                    break;
+                case 'production':
+                    investmentYear = 2; // 投产期：第2年
+                    hintText = '投产期投资时点：第2年';
+                    break;
+                case 'payback':
+                    investmentYear = projectResults.payback_period; // 回报期：项目计算回收期
+                    hintText = `回报期投资时点：第${projectResults.payback_period.toFixed(1)}年（项目回收期）`;
+                    break;
+                case 'listing':
+                    investmentYear = projectResults.payback_period + 2; // IPO：回报期后2年
+                    hintText = `IPO投资时点：第${(projectResults.payback_period + 2).toFixed(1)}年（回收期后2年）`;
+                    break;
+                case 'securitization':
+                    investmentYear = projectResults.payback_period + 5; // 证券化：回报期后5年
+                    hintText = `证券化投资时点：第${(projectResults.payback_period + 5).toFixed(1)}年（回收期后5年）`;
+                    break;
+                default:
+                    investmentYear = 1;
+                    hintText = '默认投资时点：第1年';
+            }
+
+            // 更新投资年份输入框
+            document.getElementById('investment_year').value = investmentYear.toFixed(1);
+
+            // 更新时点提示
+            const hintElement = document.getElementById('timing_hint');
+            if (hintElement) {
+                hintElement.textContent = hintText;
+            }
+
+            console.log(`投资时点更新: ${timingType} -> 第${investmentYear.toFixed(1)}年`);
+        }
+
+        // 监听投资时机变化，仅显示对应的年数（不更新实际计算参数）
+        document.addEventListener('DOMContentLoaded', function() {
+            const investmentTimingSelect = document.getElementById('investment_timing');
+            if (investmentTimingSelect) {
+                investmentTimingSelect.addEventListener('change', function() {
+                    // 如果项目计算已完成，仅显示对应的年数
+                    if (window.projectCalculationResults) {
+                        displayInvestmentTimingPreview(window.projectCalculationResults);
+                    }
+                });
+            }
+        });
+
+        // 仅显示投资时点预览年数（不更新实际参数）
+        function displayInvestmentTimingPreview(projectResults) {
+            const timingType = document.getElementById('investment_timing').value;
+            let investmentYear = 1; // 默认值
+            let hintText = '';
+
+            switch(timingType) {
+                case 'preparation':
+                    investmentYear = 1; // 筹备期：第1年
+                    hintText = `筹备期投资时点：第${investmentYear}年`;
+                    break;
+                case 'production':
+                    investmentYear = 2; // 投产期：第2年
+                    hintText = `投产期投资时点：第${investmentYear}年`;
+                    break;
+                case 'payback':
+                    investmentYear = projectResults.payback_period; // 回报期：项目计算回收期
+                    hintText = `回报期投资时点：第${investmentYear.toFixed(1)}年（项目回收期）`;
+                    break;
+                case 'listing':
+                    investmentYear = projectResults.payback_period + 2; // IPO：回报期后2年
+                    hintText = `IPO投资时点：第${investmentYear.toFixed(1)}年（回收期后2年）`;
+                    break;
+                case 'securitization':
+                    investmentYear = projectResults.payback_period + 5; // 证券化：回报期后5年
+                    hintText = `证券化投资时点：第${investmentYear.toFixed(1)}年（回收期后5年）`;
+                    break;
+                default:
+                    investmentYear = 1;
+                    hintText = '默认投资时点：第1年';
+            }
+
+            // 仅更新显示，不更新实际的投资年份输入框
+            const hintElement = document.getElementById('timing_hint');
+            if (hintElement) {
+                hintElement.textContent = hintText + ' (点击"计算投资回报"应用此设置)';
+            }
+
+            console.log(`投资时点预览: ${timingType} -> 第${investmentYear.toFixed(1)}年 (仅显示，未应用)`);
+        }
+
+        // 启用投资计算按钮
+        function enableInvestmentCalculation() {
+            document.getElementById('investment_calc_btn').disabled = false;
+        }
+
+        // 显示项目结果
+        function displayProjectResults(results) {
+            // 项目分析结果
+            document.getElementById('irr_result').textContent = results.irr.toFixed(1) + '%';
+            document.getElementById('npv_result').textContent = (results.npv / 100000000).toFixed(1) + '亿';
+            document.getElementById('total_investment_result').textContent = (results.total_investment / 100000000).toFixed(1) + '亿';
+            document.getElementById('payback_result').textContent = results.payback_period.toFixed(1) + '年';
+            document.getElementById('annual_revenue_result').textContent = (results.annual_revenue / 100000000).toFixed(1) + '亿';
+            document.getElementById('annual_cost_result').textContent = (results.annual_cost / 100000000).toFixed(1) + '亿';
+            document.getElementById('annual_distributable_profit_result').textContent = (results.annual_distributable_profit / 100000000).toFixed(1) + '亿';
+            document.getElementById('total_profit_result').textContent = (results.total_10year_profit / 100000000).toFixed(1) + '亿';
+        }
+
+        // 显示投资结果
+        function displayInvestmentResults(results) {
+            console.log('开始显示投资结果:', results);
+            console.log('关键数据检查:', {
+                investor_irr: results.investor_irr,
+                annual_after_tax_dividend: results.annual_after_tax_dividend,
+                total_after_tax_dividend: results.total_after_tax_dividend,
+                asset_present_value: results.asset_present_value,
+                actual_investment: results.actual_investment
+            });
+
+            // 显示投资结果模块
+            const investmentSection = document.getElementById('investment-results-section');
+            if (investmentSection) {
+                investmentSection.style.display = 'block';
+            }
+
+            // 核心投资指标
+            const elements = {
+                'investor_irr_result': results.investor_irr ? results.investor_irr.toFixed(1) + '%' : '--%',
+                'asset_present_value_result': (results.asset_present_value / 100000000).toFixed(1) + '亿',
+                'actual_investment_result': (results.actual_investment / 100000000).toFixed(1) + '亿',
+                'investor_payback_result': results.investor_payback_period ? results.investor_payback_period.toFixed(1) + '年' : '--年',
+                'after_tax_dividend_result': (results.annual_after_tax_dividend / 100000000).toFixed(2) + '亿',
+                'total_investor_profit_result': results.total_after_tax_dividend ? (results.total_after_tax_dividend / 100000000).toFixed(1) + '亿' : '--亿'
+            };
+
+            for (const [id, value] of Object.entries(elements)) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                    console.log(`设置 ${id}: ${value}`);
+                } else {
+                    console.error(`找不到元素: ${id}`);
+                }
+            }
+
+            // 滚动到投资结果区域
+            if (investmentSection) {
+                investmentSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // 更新投资计算后的UI状态
+        function updateInvestmentCalculationUI(results) {
+            const statusElement = document.getElementById('calculation_status');
+            const statusText = statusElement.querySelector('.status-text');
+            statusText.textContent = '✅ 投资回报分析完成，请查看上方结果';
+            statusText.className = 'status-text success';
+        }
+
+        // 显示结果（兼容旧版本）
+        function displayResults(results) {
+            // 如果有项目结果，显示项目分析结果
+            if (results.irr !== undefined) {
+                document.getElementById('irr_result').textContent = results.irr.toFixed(1) + '%';
+                document.getElementById('npv_result').textContent = (results.npv / 100000000).toFixed(1) + '亿';
+                document.getElementById('payback_result').textContent = results.payback_period.toFixed(1) + '年';
+                document.getElementById('total_investment_result').textContent = (results.total_investment / 100000000).toFixed(1) + '亿';
+                document.getElementById('annual_revenue_result').textContent = (results.annual_revenue / 100000000).toFixed(1) + '亿';
+                document.getElementById('total_profit_result').textContent = (results.total_10year_profit / 100000000).toFixed(1) + '亿';
+            }
+
+            // 如果有投资结果，显示投资回报分析
+            if (results.asset_present_value !== undefined) {
+                // 显示投资结果模块
+                document.getElementById('investment-results-section').style.display = 'block';
+
+                document.getElementById('asset_present_value_result').textContent = (results.asset_present_value / 100000000).toFixed(1) + '亿';
+                document.getElementById('investor_irr_result').textContent = results.investor_irr.toFixed(1) + '%';
+                document.getElementById('investor_payback_result').textContent = results.investor_payback_period.toFixed(1) + '年';
+                document.getElementById('actual_investment_result').textContent = (results.actual_investment / 100000000).toFixed(1) + '亿';
+                document.getElementById('after_tax_dividend_result').textContent = (results.annual_after_tax_dividend / 100000000).toFixed(2) + '亿';
+                document.getElementById('roi_result').textContent = results.roi.toFixed(0) + '%';
+            }
+        }
+
+        // 更新现金流图表
+        function updateCashflowChart(project_cashflows) {
+            const chartContainer = document.getElementById('cashflow_chart');
+            chartContainer.innerHTML = '';
+
+            // 处理负值，使用绝对值计算高度
+            const maxAbsValue = Math.max(...project_cashflows.map(Math.abs), 1);
+            const hasNegative = project_cashflows.some(cf => cf < 0);
+
+            project_cashflows.forEach((cashflow, index) => {
+                const year = index + 1;
+                const barHeight = Math.abs(cashflow / maxAbsValue) * 160;
+
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+
+                // 如果有负值，调整图表显示
+                if (hasNegative) {
+                    if (cashflow >= 0) {
+                        bar.style.height = barHeight + 'px';
+                        bar.style.marginTop = '0px';
+                    } else {
+                        bar.style.height = barHeight + 'px';
+                        bar.style.marginTop = barHeight + 'px';
+                        bar.style.background = 'linear-gradient(to bottom, #FFC72C, #FF6B6B)';
+                    }
+                } else {
+                    bar.style.height = barHeight + 'px';
+                }
+
+                const label = document.createElement('div');
+                label.className = 'bar-label';
+                label.textContent = `第${year}年`;
+
+                const value = document.createElement('div');
+                value.className = 'bar-value';
+                value.textContent = (cashflow / 100000000).toFixed(1) + '亿';
+                if (cashflow < 0) {
+                    value.style.color = '#FF6B6B';
+                }
+
+                bar.appendChild(value);
+                bar.appendChild(label);
+                chartContainer.appendChild(bar);
+            });
+
+            // 添加零轴线（如果有负值）
+            if (hasNegative) {
+                const zeroLine = document.createElement('div');
+                zeroLine.style.cssText = `
+                    position: absolute;
+                    bottom: 50%;
+                    left: 0;
+                    right: 0;
+                    height: 2px;
+                    background: #FFC72C;
+                    z-index: 1;
+                `;
+                chartContainer.style.position = 'relative';
+                chartContainer.appendChild(zeroLine);
+            }
+        }
+    </script>
+</body>
+</html>

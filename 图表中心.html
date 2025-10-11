@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="stylesheet" href="库里蓝暗夜主题.css">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>千站液冷超充项目图表中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: #0A0E27;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(26, 35, 71, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .update-time {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: linear-gradient(135deg, #f6f8fb 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #3b82f6;
+        }
+
+        .chart-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+
+        .chart-description {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .chart-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 20px;
+            background: #3b82f6;
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .chart-link:hover {
+            background: #2563eb;
+            transform: scale(1.05);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">千站液冷超充项目</h1>
+            <p class="subtitle">📊 商业计划书图表中心</p>
+            <p class="update-time">最后更新时间：2025年10月07日 22:30</p>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card" onclick="window.open('系统架构图.html', '_blank')">
+                <div class="chart-icon">🏗️</div>
+                <h3 class="chart-title">系统架构图</h3>
+                <p class="chart-description">展示云管理平台、场站管理系统、充电设备层的完整技术架构</p>
+                <a href="系统架构图.html" class="chart-link" target="_blank">查看详情</a>
+            </div>
+
+            <div class="chart-card" onclick="window.open('财务图表.html', '_blank')">
+                <div class="chart-icon">💰</div>
+                <h3 class="chart-title">财务分析图表</h3>
+                <p class="chart-description">10年期现金流预测、IRR敏感性分析、投资回报曲线等关键财务指标</p>
+                <a href="财务图表.html" class="chart-link" target="_blank">查看详情</a>
+            </div>
+
+            <div class="chart-card" onclick="window.open('市场图表.html', '_blank')">
+                <div class="chart-icon">📈</div>
+                <h3 class="chart-title">市场分析图表</h3>
+                <p class="chart-description">电动车增长趋势、充电桩需求预测、竞争对手分析、区域市场分析</p>
+                <a href="市场图表.html" class="chart-link" target="_blank">查看详情</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p class="footer-text">
+                📞 联系我们：invest@supercharging.com<br>
+                📍 地址：深圳市南山区
+            </p>
+        </div>
+    </div>
+</body>
+</html>

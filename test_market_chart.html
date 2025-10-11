@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="stylesheet" href="库里蓝暗夜主题.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>市场图表测试页面</title>
+</head>
+<body>
+    <div style="padding: 20px;">
+        <h1>市场图表测试页面</h1>
+        <button onclick="testLoad()">测试加载内容</button>
+        <button onclick="checkVariable()">检查变量</button>
+        <div id="content" style="margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+            <p>点击上面的按钮进行测试...</p>
+        </div>
+    </div>
+
+    <script>
+        function checkVariable() {
+            console.log('检查MARKET_ANALYSIS_CONTENT:', typeof MARKET_ANALYSIS_CONTENT);
+            if (typeof MARKET_ANALYSIS_CONTENT !== 'undefined') {
+                console.log('内容长度:', MARKET_ANALYSIS_CONTENT.length);
+                document.getElementById('content').innerHTML = `
+                    <h3>✅ 变量已加载</h3>
+                    <p>内容长度: ${MARKET_ANALYSIS_CONTENT.length} 字符</p>
+                    <p>前100字符: ${MARKET_ANALYSIS_CONTENT.substring(0, 100)}...</p>
+                `;
+            } else {
+                document.getElementById('content').innerHTML = `
+                    <h3>❌ 变量未加载</h3>
+                    <p>MARKET_ANALYSIS_CONTENT 变量不存在</p>
+                `;
+            }
+        }
+
+        function testLoad() {
+            if (typeof MARKET_ANALYSIS_CONTENT !== 'undefined') {
+                document.getElementById('content').innerHTML = `
+                    <h2>✅ 内容加载成功</h2>
+                    <pre style="white-space: pre-wrap; color: #B8C5D6;">${MARKET_ANALYSIS_CONTENT}</pre>
+                `;
+            } else {
+                document.getElementById('content').innerHTML = `
+                    <h2>❌ 内容加载失败</h2>
+                    <p>请检查JavaScript文件是否正确加载</p>
+                `;
+            }
+        }
+    </script>
+    <script src="market_analysis_content.js"></script>
+</body>
+</html>

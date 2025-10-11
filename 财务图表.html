@@ -1,0 +1,1020 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="stylesheet" href="库里蓝暗夜主题.css">
+    <script src="financial_analysis_content.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>千站液冷超充项目财务分析图表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: #0A0E27;
+            min-height: 100vh;
+            color: #FFFFFF;
+            padding: 20px;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+        }
+
+        .header {
+            background: rgba(26, 35, 71, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            color: #FFFFFF !important;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #B8C5E0;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chart-container:hover {
+            transform: translateY(-5px);
+            border-color: #FFC72C;
+            box-shadow: 0 25px 70px rgba(255, 199, 44, 0.2);
+        }
+
+        .chart-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FFFFFF !important;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            height: 250px;
+            margin-bottom: 20px;
+        }
+
+        .bar {
+            width: 40px;
+            background: linear-gradient(to top, #1D428A, #0077C0);
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .bar:hover {
+            transform: scaleY(1.05);
+            filter: brightness(1.2);
+            background: linear-gradient(to top, #0077C0, #FFC72C);
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #B8C5E0;
+            white-space: nowrap;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: #FFC72C;
+        }
+
+        .line-chart {
+            position: relative;
+            height: 200px;
+            margin: 20px 0;
+        }
+
+        .line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #0077C0;
+            transform: translateY(-50%);
+        }
+
+        .data-point {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #FFC72C;
+            border: 2px solid #FFFFFF;
+            border-radius: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .data-point:hover {
+            transform: translate(-50%, -50%) scale(1.5);
+            background: #FFFFFF;
+        }
+
+        .key-metrics {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.08);
+            color: #FFFFFF;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            border-color: #FFC72C;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #FFC72C;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #B8C5E0;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        .legend-text {
+            font-size: 14px;
+            color: #B8C5E0;
+        }
+
+        /* 财务分析内容区域样式 */
+        .financial-analysis-section {
+            margin-top: 60px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #FFC72C;
+            color: #FFC72C;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .refresh-btn:hover {
+            background: #FFC72C;
+            color: #1D428A;
+        }
+
+        .loading-indicator {
+            text-align: center;
+            color: #B8C5E0;
+            padding: 40px;
+            font-size: 16px;
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(255, 199, 44, 0.3);
+            border-top: 3px solid #FFC72C;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .content-area {
+            color: #FFFFFF;
+            line-height: 1.8;
+        }
+
+        .content-area h1 {
+            color: #FFFFFF;
+            font-size: 28px;
+            margin: 30px 0 20px 0;
+            border-bottom: 2px solid #FFC72C;
+            padding-bottom: 10px;
+        }
+
+        .content-area h2 {
+            color: #FFFFFF;
+            font-size: 24px;
+            margin: 25px 0 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 8px;
+        }
+
+        .content-area h3 {
+            color: #FFFFFF;
+            font-size: 20px;
+            margin: 20px 0 10px 0;
+        }
+
+        .content-area h4 {
+            color: #FFFFFF;
+            font-size: 18px;
+            margin: 15px 0 8px 0;
+        }
+
+        .content-area h5 {
+            color: #FFFFFF;
+            font-size: 16px;
+            margin: 12px 0 6px 0;
+        }
+
+        .content-area h6 {
+            color: #FFFFFF;
+            font-size: 14px;
+            margin: 10px 0 5px 0;
+        }
+
+        .content-area p {
+            margin-bottom: 15px;
+            color: #B8C5E0;
+            text-align: left;
+            text-indent: 2em;
+            line-height: 1.8;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* 特殊段落样式 - 不需要首行缩进 */
+        .content-area p.no-indent {
+            text-indent: 0;
+        }
+
+        .content-area ul, .content-area ol {
+            margin: 15px 0;
+            padding-left: 2em;
+            text-align: left;
+        }
+
+        .content-area li {
+            margin-bottom: 8px;
+            color: #B8C5E0;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        .content-area table {
+            width: 100%;
+            max-width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            table-layout: fixed;
+        }
+
+        .content-area th, .content-area td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .content-area th {
+            background: rgba(255, 199, 44, 0.2);
+            color: #FFFFFF;
+            font-weight: bold;
+        }
+
+        .content-area td {
+            color: #B8C5E0;
+        }
+
+        .content-area blockquote {
+            border-left: 4px solid #FFC72C;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #B8C5E0;
+            font-style: italic;
+        }
+
+        .content-area code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #FFC72C;
+            font-family: 'Courier New', monospace;
+        }
+
+        .content-area pre {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .content-area pre code {
+            background: none;
+            padding: 0;
+            color: #FFFFFF;
+        }
+
+        .content-area a {
+            color: #FFC72C;
+            text-decoration: none;
+        }
+
+        .content-area a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            text-align: center;
+            color: #ff6b6b;
+            padding: 40px;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1D428A 0%, #0077C0 100%);
+            color: white;
+            box-shadow: 0 10px 25px rgba(29, 66, 138, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(29, 66, 138, 0.4);
+            background: linear-gradient(135deg, #0077C0 0%, #1D428A 100%);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #FFC72C;
+            border: 2px solid #FFC72C;
+        }
+
+        .btn-secondary:hover {
+            background: #FFC72C;
+            color: #1D428A;
+            transform: translateY(-3px);
+        }
+
+        .floating-action {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .floating-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(16,185,129,0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 35px rgba(16,185,129,0.4);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .hero-content {
+                padding: 40px 20px;
+            }
+
+            .title {
+                font-size: 28px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .financial-analysis-section {
+                padding: 20px;
+                margin-top: 40px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .content-area p {
+                text-indent: 1.5em;
+                font-size: 14px;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .chart-container {
+                padding: 20px;
+            }
+
+            .bar-chart {
+                height: 200px;
+            }
+
+            .bar {
+                width: 30px;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .metric-card {
+                padding: 20px;
+            }
+
+            .metric-value {
+                font-size: 24px;
+            }
+        }
+
+        /* 超小屏幕适配 */
+        @media (max-width: 480px) {
+            .title {
+                font-size: 24px;
+            }
+
+            .section-title {
+                font-size: 20px;
+            }
+
+            .content-area p {
+                text-indent: 1em;
+                font-size: 13px;
+            }
+
+            .financial-analysis-section {
+                padding: 15px;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bar-chart {
+                height: 150px;
+            }
+
+            .bar {
+                width: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="hero">
+            <div class="header">
+                <h1 class="title">千站液冷超充项目财务分析图表</h1>
+                <p class="subtitle">10年期投资回报与现金流预测</p>
+
+                <div class="action-buttons">
+                    <a href="主页导航设计.html" class="btn btn-primary">
+                        🏠 返回主页
+                    </a>
+                    <a href="项目摘要.html" class="btn btn-secondary">
+                        📋 查看摘要
+                    </a>
+                    <a href="项目实施计划.html" class="btn btn-secondary">
+                        📋 实施计划
+                    </a>
+                    <a href="系统架构图.html" class="btn btn-secondary">
+                        🔧 系统架构
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <!-- 现金流预测图 -->
+            <div class="chart-container">
+                <h3 class="chart-title">💰 10年现金流预测（亿元）</h3>
+                <div class="bar-chart">
+                    <div class="bar" style="height: 20%">
+                        <div class="bar-value">3.2</div>
+                        <div class="bar-label">第1年</div>
+                    </div>
+                    <div class="bar" style="height: 45%">
+                        <div class="bar-value">7.1</div>
+                        <div class="bar-label">第2年</div>
+                    </div>
+                    <div class="bar" style="height: 65%">
+                        <div class="bar-value">10.3</div>
+                        <div class="bar-label">第3年</div>
+                    </div>
+                    <div class="bar" style="height: 80%">
+                        <div class="bar-value">12.7</div>
+                        <div class="bar-label">第4年</div>
+                    </div>
+                    <div class="bar" style="height: 90%">
+                        <div class="bar-value">14.3</div>
+                        <div class="bar-label">第5年</div>
+                    </div>
+                    <div class="bar" style="height: 95%">
+                        <div class="bar-value">15.1</div>
+                        <div class="bar-label">第6年</div>
+                    </div>
+                    <div class="bar" style="height: 98%">
+                        <div class="bar-value">15.6</div>
+                        <div class="bar-label">第7年</div>
+                    </div>
+                    <div class="bar" style="height: 100%">
+                        <div class="bar-value">15.9</div>
+                        <div class="bar-label">第8年</div>
+                    </div>
+                    <div class="bar" style="height: 100%">
+                        <div class="bar-value">16.2</div>
+                        <div class="bar-label">第9年</div>
+                    </div>
+                    <div class="bar" style="height: 100%">
+                        <div class="bar-value">16.5</div>
+                        <div class="bar-label">第10年</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IRR敏感性分析 -->
+            <div class="chart-container">
+                <h3 class="chart-title">📊 IRR敏感性分析</h3>
+                <div class="bar-chart">
+                    <div class="bar" style="height: 45%; background: linear-gradient(to top, #ef4444, #f59e0b);">
+                        <div class="bar-value">22.5%</div>
+                        <div class="bar-label">悲观</div>
+                    </div>
+                    <div class="bar" style="height: 60%; background: linear-gradient(to top, #f59e0b, #eab308);">
+                        <div class="bar-value">30.3%</div>
+                        <div class="bar-label">基准</div>
+                    </div>
+                    <div class="bar" style="height: 80%; background: linear-gradient(to top, #10b981, #06b6d4);">
+                        <div class="bar-value">42.8%</div>
+                        <div class="bar-label">乐观</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 投资回报曲线 -->
+        <div class="chart-container">
+            <h3 class="chart-title">📈 投资回报曲线</h3>
+            <div class="line-chart">
+                <div class="line"></div>
+                <div class="data-point" style="left: 10%" title="第1年: -25亿"></div>
+                <div class="data-point" style="left: 20%" title="第2年: -18亿"></div>
+                <div class="data-point" style="left: 30%" title="第3年: -8亿"></div>
+                <div class="data-point" style="left: 40%" title="第4年: 5亿"></div>
+                <div class="data-point" style="left: 50%" title="第5年: 19亿"></div>
+                <div class="data-point" style="left: 60%" title="第6年: 34亿"></div>
+                <div class="data-point" style="left: 70%" title="第7年: 50亿"></div>
+                <div class="data-point" style="left: 80%" title="第8年: 66亿"></div>
+                <div class="data-point" style="left: 90%" title="第9年: 82亿"></div>
+                <div class="data-point" style="left: 100%" title="第10年: 99亿"></div>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ef4444;"></div>
+                    <div class="legend-text">投资期</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f59e0b;"></div>
+                    <div class="legend-text">回收期</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #10b981;"></div>
+                    <div class="legend-text">盈利期</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 关键指标 -->
+        <div class="key-metrics">
+            <h3 class="chart-title">🎯 关键财务指标</h3>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">42.8%</div>
+                    <div class="metric-label">项目IRR</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">4.5年</div>
+                    <div class="metric-label">投资回收期</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">12.4亿</div>
+                    <div class="metric-label">NPV@12%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">435%</div>
+                    <div class="metric-label">10年回报率</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">28亿</div>
+                    <div class="metric-label">总投资额</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">1000座</div>
+                    <div class="metric-label">建设规模</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 财务分析内容区域 -->
+        <div class="financial-analysis-section">
+            <div class="section-header">
+                <h2 class="section-title">💰 财务分析详情</h2>
+                <button class="refresh-btn" onclick="loadFinancialAnalysis()">
+                    <span>🔄</span>
+                    <span>刷新内容</span>
+                </button>
+            </div>
+
+            <div id="financial-analysis-content">
+                <div class="loading-indicator">
+                    <div class="loading-spinner"></div>
+                    <div>正在加载财务分析内容...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-action">
+        <button class="floating-btn" onclick="window.open('项目完成总结.md', '_blank')" title="查看项目完成总结">
+            📋
+        </button>
+    </div>
+
+    <script>
+        // 财务分析内容加载函数
+        function loadFinancialAnalysis() {
+            const contentDiv = document.getElementById('financial-analysis-content');
+
+            // 显示加载状态
+            contentDiv.innerHTML = `
+                <div class="loading-indicator">
+                    <div class="loading-spinner"></div>
+                    <div>正在加载财务分析内容...</div>
+                </div>
+            `;
+
+            // 优先使用预加载内容
+            if (typeof FINANCIAL_ANALYSIS_CONTENT !== 'undefined') {
+                console.log('使用预加载的财务分析内容');
+                const parsedContent = parseMarkdown(FINANCIAL_ANALYSIS_CONTENT);
+                contentDiv.innerHTML = `<div class="content-area">${parsedContent}</div>`;
+                return;
+            }
+
+            // 尝试从服务器加载内容
+            loadFinancialAnalysisFromServer();
+        }
+
+        // 从服务器加载财务分析内容
+        function loadFinancialAnalysisFromServer() {
+            const contentDiv = document.getElementById('financial-analysis-content');
+
+            fetch('http://localhost:8000/生成式商业计划书内容/财务分析.md')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.text();
+                })
+                .then(content => {
+                    console.log('成功从服务器加载财务分析内容');
+                    const parsedContent = parseMarkdown(content);
+                    contentDiv.innerHTML = `<div class="content-area">${parsedContent}</div>`;
+                })
+                .catch(error => {
+                    console.warn('服务器加载失败，使用默认内容:', error);
+                    loadDefaultFinancialAnalysis();
+                });
+        }
+
+        // 加载默认财务分析内容
+        function loadDefaultFinancialAnalysis() {
+            const contentDiv = document.getElementById('financial-analysis-content');
+
+            const defaultContent = `# 财务分析
+
+## 投资规模与结构
+
+### 💰 总投资概览
+- **总投资额**：28亿元人民币
+- **单站投资**：280万元/站
+- **建设规模**：1000座液冷超充站
+- **建设周期**：5年分期建设
+
+### 📊 投资构成
+1. **设备投资**：168亿元（60%）
+   - 充电桩设备：126亿元
+   - 电力设备：28亿元
+   - 辅助设备：14亿元
+
+2. **土建工程**：56亿元（20%）
+   - 场站建设：42亿元
+   - 基础设施：14亿元
+
+3. **运营资金**：42亿元（15%）
+   - 流动资金：28亿元
+   - 备用金：14亿元
+
+4. **其他费用**：14亿元（5%）
+   - 设计咨询：8.4亿元
+   - 开办费用：5.6亿元
+
+## 收入预测模型
+
+### 📈 收入来源
+1. **充电服务费**：主要收入来源
+2. **增值服务费**：广告、便利店等
+3. **政府补贴**：建设补贴和运营补贴
+4. **其他收入**：场地租赁、技术服务等
+
+## 关键财务指标
+
+### 📊 投资回报指标
+- **投资回收期**：4.5年
+- **净现值(NPV@12%)**：12.4亿元
+- **内部收益率(IRR)**：42.8%
+- **投资回报率(ROI)**：435%（10年）
+
+*注：当前显示为默认内容。如需查看完整内容，请启动本地服务器或刷新页面重试。*`;
+
+            const parsedContent = parseMarkdown(defaultContent);
+            contentDiv.innerHTML = `<div class="content-area">${parsedContent}</div>`;
+        }
+
+        // Markdown解析函数（支持段落样式）
+        function parseMarkdown(markdown) {
+            if (!markdown) return '';
+
+            let html = markdown;
+
+            // 处理标题（支持h1-h6）
+            html = html.replace(/^###### (.+)$/gm, '<h6>$1</h6>');
+            html = html.replace(/^##### (.+)$/gm, '<h5>$1</h5>');
+            html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+            html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+            html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+            // 处理粗体文本
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+            // 处理斜体文本
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+            // 处理行内代码
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+            // 处理链接
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+            // 处理图片
+            html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto; border-radius: 8px; margin: 15px 0;">');
+
+            // 处理代码块
+            html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+
+            // 处理引用块
+            html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+
+            // 处理无序列表
+            html = html.replace(/^[\*\-\+] (.+)$/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+
+            // 处理有序列表
+            html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+
+            // 处理表格（增强版）- 先处理表格再处理段落
+            html = html.replace(/(\|[^\n]+\|\n)+/g, function(tableMatch) {
+                const lines = tableMatch.trim().split('\n');
+                if (lines.length < 2) return tableMatch;
+
+                // 跳过分隔线
+                const dataLines = lines.filter((line, index) => index !== 1);
+                const rows = dataLines.map(line => {
+                    const cells = line.split('|').slice(1, -1).map(cell => cell.trim());
+                    const isHeader = line === lines[0];
+                    const tag = isHeader ? 'th' : 'td';
+                    return `<tr>${cells.map(cell => `<${tag}>${cell}</${tag}>`).join('')}</tr>`;
+                });
+                return `<table>${rows.join('')}</table>`;
+            });
+
+            // 处理分隔线
+            html = html.replace(/^---+$/gm, '<hr style="border: none; border-top: 2px solid rgba(255, 255, 255, 0.2); margin: 20px 0;">');
+
+            // 处理换行 - 智能段落处理
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = '<p>' + html + '</p>';
+
+            // 清理多余的段落标签 - 更精确的清理逻辑
+            html = html.replace(/<p><\/p>/g, '');
+            html = html.replace(/<p>(<h[1-6]>)/g, '$1');
+            html = html.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<ul>)/g, '$1');
+            html = html.replace(/(<\/ul>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<ol>)/g, '$1');
+            html = html.replace(/(<\/ol>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<blockquote>)/g, '$1');
+            html = html.replace(/(<\/blockquote>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<pre>)/g, '$1');
+            html = html.replace(/(<\/pre>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<hr)/g, '$1');
+            html = html.replace(/(<\/table>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<table)/g, '$1');
+            html = html.replace(/(<\/tr>)<\/p><p>/g, '$1');
+            html = html.replace(/<p>(<tr)/g, '$1');
+
+            // 为特殊段落添加no-indent类
+            html = html.replace(/<p>(\*\*[^*]*\*\*)<\/p>/g, '<p class="no-indent">$1</p>'); // 粗体标题段落
+            html = html.replace(/<p>(\*\*.*?\*\*：.*?)<\/p>/g, '<p class="no-indent">$1</p>'); // 粗体标题段落
+            html = html.replace(/<p>(\*注：.*?)<\/p>/g, '<p class="no-indent">$1</p>'); // 注释段落
+            html = html.replace(/<p>（.*?）<\/p>/g, '<p class="no-indent">$1</p>'); // 括号说明段落
+            html = html.replace(/<p>\d+\..*?<\/p>/g, '<p class="no-indent">$1</p>'); // 数字开头的段落
+            html = html.replace(/<p>([一二三四五六七八九十]+、.*?)<\/p>/g, '<p class="no-indent">$1</p>'); // 中文数字段落
+
+            return html;
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 页面加载完成后自动加载财务分析内容
+            loadFinancialAnalysis();
+        });
+    </script>
+</body>
+</html>
