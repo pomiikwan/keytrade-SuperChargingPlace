@@ -1814,7 +1814,7 @@
             // 绘制液冷循环系统
             const centerX = width / 2;
             const centerY = height / 2 + 10;
-            const radius = Math.min(100, width / 4);
+            const radius = Math.max(20, Math.min(100, width / 4)); // 确保半径至少为20px
 
             // 外圈循环管路
             ctx.strokeStyle = colors.primary;
@@ -1824,10 +1824,11 @@
             ctx.stroke();
 
             // 内圈循环管路
+            const innerRadius = Math.max(10, radius - 30); // 确保半径不为负数
             ctx.strokeStyle = colors.secondary;
             ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.arc(centerX, centerY, radius - 30, 0, 2 * Math.PI);
+            ctx.arc(centerX, centerY, innerRadius, 0, 2 * Math.PI);
             ctx.stroke();
 
             // 组件位置和规格
@@ -1868,9 +1869,10 @@
 
             components.forEach((comp, index) => {
                 // 绘制组件圆圈
+                const componentRadius = Math.max(5, Math.min(35, radius / 3)); // 动态调整组件半径
                 ctx.fillStyle = comp.color;
                 ctx.beginPath();
-                ctx.arc(comp.x, comp.y, 35, 0, 2 * Math.PI);
+                ctx.arc(comp.x, comp.y, componentRadius, 0, 2 * Math.PI);
                 ctx.fill();
 
                 // 绘制组件边框
