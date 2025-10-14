@@ -1068,7 +1068,7 @@
                             <label class="input-label">单站年人工成本</label>
                             <div class="input-wrapper">
                                 <input type="number" id="labor_cost" class="input-field" value="120" min="60" max="300" step="10">
-                                <span class="input-unit">万元</span>
+                                <span class="input-unit">千元</span>
                             </div>
                         </div>
 
@@ -1283,7 +1283,7 @@
                                     </span>
                                 </label>
                                 <div class="input-wrapper">
-                                    <input type="number" id="preparation_premium" class="input-field" value="-20" min="-50" max="0" step="1">
+                                    <input type="number" id="preparation_premium" class="input-field" value="0" min="-50" max="0" step="1">
                                     <span class="input-unit">%</span>
                                 </div>
                             </div>
@@ -1492,38 +1492,38 @@
             investor_corporate_tax_rate: 0
         };
 
-        // 情景参数 - 包含波动范围
+        // 情景参数 - 包含波动范围（缩窄范围以提供更现实的预测）
         const scenarios = {
             conservative: {
-                utilization_rate: 20,
-                charging_price: 0.75,
-                price_spread: 0.45,
-                total_stations: 800,
-                construction_cost: 320,
+                utilization_rate: 25,
+                charging_price: 0.85,
+                price_spread: 0.50,
+                total_stations: 900,
+                construction_cost: 300,
                 volatility: {
-                    revenue: [-0.15, 0.05],  // 收入波动范围：-15%到+5%
-                    cost: [0.05, 0.15],     // 成本波动范围：+5%到+15%
-                    utilization: [-0.1, 0.03] // 利用率波动：-10%到+3%
+                    revenue: [-0.08, 0.03],  // 收入波动范围：-8%到+3%
+                    cost: [0.03, 0.08],     // 成本波动范围：+3%到+8%
+                    utilization: [-0.06, 0.02] // 利用率波动：-6%到+2%
                 }
             },
             base: {
                 ...defaultParameters,
                 volatility: {
-                    revenue: [-0.08, 0.12],  // 收入波动范围：-8%到+12%
-                    cost: [0.02, 0.10],     // 成本波动范围：+2%到+10%
-                    utilization: [-0.05, 0.08] // 利用率波动：-5%到+8%
+                    revenue: [-0.05, 0.08],  // 收入波动范围：-5%到+8%
+                    cost: [0.02, 0.07],     // 成本波动范围：+2%到+7%
+                    utilization: [-0.03, 0.05] // 利用率波动：-3%到+5%
                 }
             },
             optimistic: {
-                utilization_rate: 40,
-                charging_price: 1.15,
-                price_spread: 0.65,
-                total_stations: 1200,
-                construction_cost: 250,
+                utilization_rate: 35,
+                charging_price: 1.05,
+                price_spread: 0.58,
+                total_stations: 1100,
+                construction_cost: 265,
                 volatility: {
-                    revenue: [0.05, 0.20],   // 收入波动范围：+5%到+20%
-                    cost: [-0.02, 0.08],    // 成本波动范围：-2%到+8%
-                    utilization: [0.02, 0.12]  // 利用率波动：+2%到+12%
+                    revenue: [0.02, 0.12],   // 收入波动范围：+2%到+12%
+                    cost: [-0.01, 0.05],    // 成本波动范围：-1%到+5%
+                    utilization: [0.01, 0.08]  // 利用率波动：+1%到+8%
                 }
             }
         };
@@ -1709,7 +1709,7 @@
                                 </span>
                             </label>
                             <div class="input-wrapper">
-                                <input type="number" id="preparation_premium" class="input-field" value="-20" min="-50" max="0" step="1">
+                                <input type="number" id="preparation_premium" class="input-field" value="0" min="-50" max="0" step="1">
                                 <span class="input-unit">%</span>
                             </div>
                         </div>
@@ -1725,7 +1725,7 @@
                                 </span>
                             </label>
                             <div class="input-wrapper">
-                                <input type="number" id="production_premium" class="input-field" value="5" min="-10" max="20" step="1">
+                                <input type="number" id="production_premium" class="input-field" value="15" min="-10" max="20" step="1">
                                 <span class="input-unit">%</span>
                             </div>
                         </div>
@@ -1741,7 +1741,7 @@
                                 </span>
                             </label>
                             <div class="input-wrapper">
-                                <input type="number" id="payback_premium" class="input-field" value="15" min="0" max="50" step="1">
+                                <input type="number" id="payback_premium" class="input-field" value="45" min="0" max="50" step="1">
                                 <span class="input-unit">%</span>
                             </div>
                         </div>
@@ -1757,7 +1757,7 @@
                                 </span>
                             </label>
                             <div class="input-wrapper">
-                                <input type="number" id="listing_premium" class="input-field" value="40" min="20" max="100" step="5">
+                                <input type="number" id="listing_premium" class="input-field" value="60" min="20" max="100" step="5">
                                 <span class="input-unit">%</span>
                             </div>
                         </div>
