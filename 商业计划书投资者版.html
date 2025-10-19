@@ -1497,7 +1497,7 @@
                 success: '#10B981',
                 accent: '#FFC72C',
                 text: '#374151',
-                bg: '#B8C5E0'
+                bg: '#ffffff'
             };
 
             // 绘制坐标轴
@@ -2374,11 +2374,8 @@
                 bg: 'rgba(255, 255, 255, 0.95)'
             };
 
-            // 绘制背景渐变
-            const bgGradient = ctx.createLinearGradient(0, 0, width, height);
-            bgGradient.addColorStop(0, 'rgba(255, 255, 255, 0.98)');
-            bgGradient.addColorStop(1, 'rgba(184, 197, 224, 0.3)');
-            ctx.fillStyle = bgGradient;
+            // 绘制白色背景
+            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
             ctx.fillRect(0, 0, width, height);
 
             // 绘制充电站布局区域
@@ -2388,7 +2385,7 @@
             const stationY = 60;
 
             // 站点区域背景
-            ctx.fillStyle = 'rgba(29, 66, 138, 0.05)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
             ctx.fillRect(stationX - 10, stationY - 10, stationWidth + 20, stationHeight + 60);
 
             // 站点边框
@@ -3222,11 +3219,11 @@
                 danger: '#EF4444',
                 accent: '#FFC72C',
                 text: '#374151',
-                bg: '#B8C5E0'
+                bg: '#ffffff'
             };
 
             // 绘制背景
-            ctx.fillStyle = 'rgba(29, 66, 138, 0.05)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
             ctx.fillRect(0, 0, width, height);
 
             // 标题
@@ -3423,11 +3420,11 @@
                 danger: '#EF4444',
                 accent: '#FFC72C',
                 text: '#374151',
-                bg: '#B8C5E0'
+                bg: '#ffffff'
             };
 
             // 绘制背景
-            ctx.fillStyle = 'rgba(29, 66, 138, 0.05)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
             ctx.fillRect(0, 0, width, height);
 
             // 标题
@@ -3541,11 +3538,11 @@
                 danger: '#EF4444',
                 accent: '#FFC72C',
                 text: '#374151',
-                bg: '#B8C5E0'
+                bg: '#ffffff'
             };
 
             // 绘制背景
-            ctx.fillStyle = 'rgba(29, 66, 138, 0.05)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
             ctx.fillRect(0, 0, width, height);
 
             // 标题
