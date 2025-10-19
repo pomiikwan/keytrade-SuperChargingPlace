@@ -39,8 +39,7 @@ const EXECUTIVE_SUMMARY_CONTENT = `<div style="text-align: left;">
 </ul>
 <h3 id="_5">📈 市场巨大机遇</h3>
 <ul class="list-unstyled mb-3">
-<li class="mb-2"><strong>市场增长</strong>：2023年纯电保有量1260万辆，年复合增长率25%</li>
-<li class="mb-2"><strong>市场容量</strong>：2027年有效站址504个，市场投资规模14.1亿元</li>
+<li class="mb-2"><strong>市场增长</strong>：2023年新能源车保有量2041万辆，连续四年超50%高增长，年复合增长率45%</li>
 <li class="mb-2"><strong>政策支持</strong>：县域超充示范项目，建设补贴10万元/站</li>
 <li class="mb-2"><strong>需求爆发</strong>：新能源汽车渗透率持续提升，充电需求刚性增长</li>
 <li class="mb-2"><strong>竞争优势</strong>：华为600kW技术领先，独占兆级技术红利期</li>
@@ -130,7 +129,7 @@ const EXECUTIVE_SUMMARY_CONTENT = `<div style="text-align: left;">
 <h3 id="_11">电动车市场爆发</h3>
 <ul class="list-unstyled mb-3">
 <li class="mb-2"><strong>渗透率提升</strong>：从2020年的5%增长至2025年的35%</li>
-<li class="mb-2"><strong>保有量预测</strong>：2030年中国电动车保有量将达8000万辆</li>
+<li class="mb-2"><strong>保有量预测</strong>：基于2023年2041万辆基数，预计2027年将达4000-4500万辆，2030年有望突破8000万辆</li>
 <li class="mb-2"><strong>充电需求</strong>：对应需要1000万+充电桩，市场空间巨大</li>
 </ul>
 <h3 id="_12">政策强力驱动</h3>
