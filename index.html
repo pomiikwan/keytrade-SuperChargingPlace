@@ -591,11 +591,11 @@
                     <div class="stat-label">总投资</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">42.8%</div>
+                    <div class="stat-number">24.2%</div>
                     <div class="stat-label">年化收益率</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">4.5年</div>
+                    <div class="stat-number">4.2年</div>
                     <div class="stat-label">投资回收期</div>
                 </div>
             </div>
@@ -706,44 +706,11 @@
                     查看详情 <span>→</span>
                 </a>
             </div>
-
-            <div class="nav-card" onclick="openTool('增强交互式计算器.html')">
-                <div class="card-icon">🧮</div>
-                <h3 class="card-title">多情景预测</h3>
-                <p class="card-description">实时参数调整和财务分析，支持多种投资情景分析</p>
-                <ul class="card-features">
-                    <li>实时计算IRR、NPV等关键指标</li>
-                    <li>支持保守/基准/乐观三种情景</li>
-                    <li>动态现金流预测图表</li>
-                    <li>参数验证和合理性检查</li>
-                </ul>
-                <a href="#" class="card-action">
-                    立即使用 <span>→</span>
-                </a>
-            </div>
-
-            <div class="nav-card" onclick="openTool('自动商业计划书生成器_增强版.html')">
-                <div class="card-icon">📄</div>
-                <h3 class="card-title">多模式合作</h3>
-                <p class="card-description">智能生成个性化商业计划书，支持多种模板和格式导出</p>
-                <ul class="card-features">
-                    <li>参数驱动内容生成</li>
-                    <li>多种专业模板</li>
-                    <li>实时预览功能</li>
-                    <li>PDF/Word/Excel导出</li>
-                </ul>
-                <a href="#" class="card-action">
-                    生成计划书 <span>→</span>
-                </a>
-            </div>
         </section>
 
         <section id="quick-actions" class="quick-actions">
             <h3>快速操作</h3>
             <div class="action-buttons">
-                <button class="action-btn primary" onclick="openTool('交互式计算器.html')">
-                    <span>🧮</span> 打开财务计算器
-                </button>
                 <button class="action-btn secondary" onclick="showContact()">
                     <span>📞</span> 联系项目负责人
                 </button>
@@ -780,9 +747,8 @@
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('contactModal')">×</button>
             <h3>联系信息</h3>
-            <p><strong>项目公司：</strong>深圳市超算力量科技有限公司</p>
-            <p><strong>联系邮箱：</strong>invest@supercharging.com</p>
-            <p><strong>项目地址：</strong>深圳市南山区</p>
+            <p><strong>项目公司：</strong>广州合拓咨询有限公司</p>
+            <p><strong>联系邮箱：</strong>438703899@qq.com</p>
             <br>
             <p><strong>投资咨询：</strong></p>
             <p>如需了解更多投资详情，请发送邮件至投资咨询邮箱，我们将尽快回复。</p>
@@ -847,7 +813,7 @@
             showLoading();
             setTimeout(() => {
                 // 创建CSV下载
-                const csvContent = "财务指标,数值\nIRR,42.8%\nNPV@12%,12.4亿元\n投资回收期,4.5年\n10年累计利润,121.9亿元";
+                const csvContent = "财务指标,数值\nIRR,24.2%\nNPV@10%,8.68亿元\n投资回收期,4.2年\n10年累计利润,86.8亿元";
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement("a");
                 const url = URL.createObjectURL(blob);
