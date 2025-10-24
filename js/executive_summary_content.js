@@ -49,7 +49,7 @@ const EXECUTIVE_SUMMARY_CONTENT = `<div style="text-align: left;">
 <li class="mb-2"><strong>内部收益率</strong>：24.2%（项目IRR），显著高于基础设施平均水平</li>
 <li class="mb-2"><strong>净现值</strong>：NPV@10% = 8.7亿元，价值创造明确</li>
 <li class="mb-2"><strong>投资回收期</strong>：4.2年（基于EBITDA计算），资金周转效率高</li>
-<li class="mb-2"><strong>单站年收入</strong>：222.7万元，收入结构稳定多元</li>
+<li class="mb-2"><strong>单站年收入</strong>：205万元，收入结构稳定多元</li>
 <li class="mb-2"><strong>单站年利润</strong>：37.9万元，盈利能力强劲</li>
 <li class="mb-2"><strong>EBITDA利润率</strong>：28.6%，运营效率优秀</li>
 <li class="mb-2"><strong>项目年现金流</strong>：6.36亿元，现金流充足</li>
