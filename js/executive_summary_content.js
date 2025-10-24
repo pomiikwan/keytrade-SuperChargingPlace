@@ -168,7 +168,7 @@ const EXECUTIVE_SUMMARY_CONTENT = `<div style="text-align: left;">
 <li class="mb-2"><strong>成本控制</strong>：精细化成本管理体系</li>
 <li class="mb-2"><strong>用户体验</strong>：优质充电服务体验</li>
 </ul>
-<h2 id="_18">财务预测摘要</h2>
+<h2 id="_18">投资摘要</h2>
 <h3 id="28">投资构成（28亿元）</h3>
 <ul class="list-unstyled mb-3">
 <li class="mb-2"><strong>设备投资</strong>：18亿元（64%）</li>
@@ -176,20 +176,6 @@ const EXECUTIVE_SUMMARY_CONTENT = `<div style="text-align: left;">
 <li class="mb-2"><strong>运营资金</strong>：3亿元（11%）</li>
 <li class="mb-2"><strong>技术研发</strong>：2亿元（7%）</li>
 <li class="mb-2"><strong>其他费用</strong>：1亿元（4%）</li>
-</ul>
-<h3 id="10">收入预测（10年）</h3>
-<ul class="list-unstyled mb-3">
-<li class="mb-2"><strong>充电收入</strong>：280亿元（占比85%）</li>
-<li class="mb-2"><strong>增值服务</strong>：35亿元（占比11%）</li>
-<li class="mb-2"><strong>广告收入</strong>：14亿元（占比4%）</li>
-<li class="mb-2"><strong>总计收入</strong>：329亿元</li>
-</ul>
-<h3 id="_19">利润预测</h3>
-<ul class="list-unstyled mb-3">
-<li class="mb-2"><strong>累计毛利润</strong>：189.6亿元</li>
-<li class="mb-2"><strong>累计净利润</strong>：121.9亿元</li>
-<li class="mb-2"><strong>平均年净利润</strong>：12.2亿元</li>
-<li class="mb-2"><strong>平均净利率</strong>：37%</li>
 </ul>
 <h2 id="_20">风险评估</h2>
 <h3 id="_21">市场风险（中等）</h3>
