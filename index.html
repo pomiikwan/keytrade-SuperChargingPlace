@@ -55,7 +55,8 @@
         .logo-icon {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #1D428A 0%, #0077C0 100%);
+            background: url('LOGO-K.png') no-repeat center;
+            background-size: contain;
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -562,15 +563,16 @@
 
         <div class="header-content">
             <div class="logo">
-                <div class="logo-icon">⚡</div>
+                <div class="logo-icon"></div>
                 <div class="logo-text">
-                    <h1>Keytrade</h1>
-                    <p>项目智能管理</p>
+                    <h1>五方力量</h1>
+                    <p>科技创新引领未来</p>
                 </div>
             </div>
             <div class="nav-buttons">
                 <button class="nav-btn active" onclick="scrollToSection('navigation')">功能导航</button>
                 <button class="nav-btn" onclick="scrollToSection('quick-actions')">快速操作</button>
+                <button class="nav-btn" onclick="window.open('五方力量官方介绍.html', '_blank')">企业介绍</button>
                 <button class="nav-btn" onclick="showHelp()">使用帮助</button>
                 <button class="nav-btn" onclick="window.open('https://pomiikwan.github.io/keytrade-EN-SuperChargingPlace/', '_blank')">English</button>
             </div>
@@ -712,7 +714,7 @@
             <h3>快速操作</h3>
             <div class="action-buttons">
                 <button class="action-btn secondary" onclick="showContact()">
-                    <span>📞</span> 联系项目负责人
+                    <span>📞</span> 五方力量投融资部：关先生
                 </button>
             </div>
             <div class="loading-spinner" id="loadingSpinner"></div>
@@ -747,7 +749,8 @@
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('contactModal')">×</button>
             <h3>联系信息</h3>
-            <p><strong>项目公司：</strong>广州合拓咨询有限公司</p>
+            <p><strong>联系部门：</strong>五方力量投融资部</p>
+            <p><strong>联系人：</strong>关先生</p>
             <p><strong>联系邮箱：</strong>438703899@qq.com</p>
             <br>
             <p><strong>投资咨询：</strong></p>

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="stylesheet" href="库里蓝暗夜主题.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五方力量科技有限公司 - 官方企业介绍</title>
+    <style>
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(29, 66, 138, 0.9), rgba(0, 119, 192, 0.8));
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .company-name {
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 0 40px rgba(255, 199, 44, 0.5);
+        }
+
+        .company-english {
+            font-size: 28px;
+            color: #FFC72C;
+            margin-bottom: 30px;
+            font-weight: 500;
+            position: relative;
+            z-index: 2;
+        }
+
+        .company-tagline {
+            font-size: 18px;
+            color: #B8C5D6;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+            position: relative;
+            z-index: 2;
+        }
+
+        .business-segments {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .segment-card {
+            background: rgba(26, 35, 71, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            border: 1px solid rgba(0, 119, 192, 0.3);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .segment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1D428A, #0077C0, #FFC72C);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .segment-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .segment-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 70px rgba(0, 119, 192, 0.4);
+            background: rgba(29, 66, 138, 0.95);
+        }
+
+        .segment-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #1D428A 0%, #0077C0 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 119, 192, 0.4);
+        }
+
+        .segment-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #FFFFFF;
+        }
+
+        .segment-description {
+            color: #B8C5D6;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .segment-features {
+            text-align: left;
+        }
+
+        .segment-features ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .segment-features li {
+            color: #B8C5D6;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 119, 192, 0.2);
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .segment-features li::before {
+            content: '⚡';
+            position: absolute;
+            left: 0;
+            color: #FFC72C;
+        }
+
+        .advantages-section {
+            background: rgba(29, 66, 138, 0.2);
+            padding: 60px 0;
+            margin: 60px 0;
+            border-radius: 20px;
+        }
+
+        .advantages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .advantage-item {
+            background: rgba(26, 35, 71, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(0, 119, 192, 0.3);
+        }
+
+        .advantage-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #FFC72C 0%, #FFD700 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #1D428A;
+        }
+
+        .contact-section {
+            background: rgba(26, 35, 71, 0.9);
+            padding: 60px 40px;
+            border-radius: 20px;
+            margin: 60px 0;
+            text-align: center;
+            border: 1px solid rgba(0, 119, 192, 0.3);
+        }
+
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .contact-item {
+            padding: 20px;
+            background: rgba(29, 66, 138, 0.5);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 119, 192, 0.2);
+        }
+
+        .back-to-home {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #1D428A 0%, #0077C0 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+            box-shadow: 0 8px 25px rgba(0, 119, 192, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-to-home:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 199, 44, 0.4);
+            background: linear-gradient(135deg, #0077C0 0%, #1D428A 100%);
+        }
+
+        .tech-showcase {
+            margin: 60px 0;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .tech-item {
+            background: rgba(26, 35, 71, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(0, 119, 192, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            background: rgba(29, 66, 138, 0.9);
+            transform: translateY(-3px);
+            border-color: rgba(255, 199, 44, 0.4);
+        }
+
+        .tech-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: #FFC72C;
+        }
+
+        @media (max-width: 768px) {
+            .company-name {
+                font-size: 36px;
+            }
+
+            .company-english {
+                font-size: 20px;
+            }
+
+            .business-segments {
+                grid-template-columns: 1fr;
+            }
+
+            .segment-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- 顶部横幅 -->
+        <div class="hero-banner">
+            <div class="company-name">五方力量科技有限公司</div>
+            <div class="company-english">Five Force Technology Co., Ltd.</div>
+            <div class="company-tagline">
+                蓝瞳半导体集团对外开放窗口 | 新能源基础设施综合解决方案提供商 |
+                母公司芯片产品授权分销商 | 算力中心设备专业供应商
+            </div>
+        </div>
+
+        <!-- 公司概况 -->
+        <section class="fade-in">
+            <h2>公司概况 | Company Overview</h2>
+            <div class="card">
+                <p>
+                    五方力量科技有限公司是蓝瞳半导体（深圳）有限公司旗下专注于对外业务拓展的核心子公司，
+                    作为蓝瞳半导体集团的重要对外开放窗口，公司依托集团强大的技术研发实力和产业基础，
+                    专注于三大核心业务领域的市场化运营与全球布局。
+                </p>
+                <p>
+                    Five Force Technology Co., Ltd. (hereinafter "FIVE FORCE") is the principal subsidiary of
+                    Blue Eye Semiconductor (Shenzhen) Co., Ltd. ("BES"), specializing in international business expansion.
+                    As the primary global business interface of BES Group, FIVE FORCE leverages the Group's robust technical
+                    R&D capabilities and industrial infrastructure to focus on market-driven operations and global expansion
+                    across three core business segments.
+                </p>
+            </div>
+        </section>
+
+        <!-- 核心业务板块 -->
+        <section class="business-segments fade-in">
+            <div class="segment-card">
+                <div class="segment-icon">⚡</div>
+                <div class="segment-title">新能源汽车超级充电基础设施</div>
+                <div class="segment-description">
+                    依托华为数字能源生态合作伙伴体系，提供光、储、充、检、放一体化解决方案
+                </div>
+                <div class="segment-features">
+                    <ul>
+                        <li>场站规划与设计服务</li>
+                        <li>兆瓦级超充设备供应</li>
+                        <li>智能化运营管理</li>
+                        <li>储能系统集成</li>
+                        <li>电力配套设备</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="segment-card">
+                <div class="segment-icon">💎</div>
+                <div class="segment-title">集团授权芯片对外业务</div>
+                <div class="segment-description">
+                    作为蓝瞳半导体集团芯片产品的对外授权经销商，负责各类芯片产品的全球市场推广与销售
+                </div>
+                <div class="segment-features">
+                    <ul>
+                        <li>UFS闪存芯片系列</li>
+                        <li>SSD固态硬盘芯片</li>
+                        <li>GPU图形处理器芯片</li>
+                        <li>DRAM存储芯片</li>
+                        <li>快充系列芯片</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="segment-card">
+                <div class="segment-icon">🖥️</div>
+                <div class="segment-title">服务器与算力中心设备</div>
+                <div class="segment-description">
+                    依托集团在先进算力领域的技术优势，提供完整的服务器与算力中心解决方案
+                </div>
+                <div class="segment-features">
+                    <ul>
+                        <li>高性能服务器</li>
+                        <li>AI算力设备</li>
+                        <li>数据中心基础设施</li>
+                        <li>对外贸易服务</li>
+                        <li>供应链管理</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 技术优势 -->
+        <section class="advantages-section fade-in">
+            <h2>技术优势与核心竞争力</h2>
+            <div class="advantages-grid">
+                <div class="advantage-item">
+                    <div class="advantage-icon">🔬</div>
+                    <h3>技术研发实力</h3>
+                    <p>依托蓝瞳半导体20余年芯片研发经验，拥有先进封装技术和液冷技术领先优势</p>
+                </div>
+                <div class="advantage-item">
+                    <div class="advantage-icon">⚙️</div>
+                    <h3>产品优势特点</h3>
+                    <p>高功率密度、极致效率、高可靠性、智能化程度的完美结合</p>
+                </div>
+                <div class="advantage-item">
+                    <div class="advantage-icon">🎯</div>
+                    <h3>服务能力优势</h3>
+                    <p>一站式解决方案、快速响应机制、定制化服务、国际化服务能力</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 技术展示 -->
+        <section class="tech-showcase fade-in">
+            <h2>核心技术展示</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-icon">🔋</div>
+                    <h4>液冷超充技术</h4>
+                    <p>全液冷架构，15年使用寿命</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🤖</div>
+                    <h4>AIoT智能管理</h4>
+                    <p>智能化运营管理平台</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">📱</div>
+                    <h4>V2G车网互动</h4>
+                    <p>双向功率流动功能</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🌟</div>
+                    <h4>先进封装技术</h4>
+                    <p>新材料+新基板+新封装</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 应用场景 -->
+        <section class="fade-in">
+            <h2>应用场景与解决方案</h2>
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>城市充电网络建设</h3>
+                    <ul>
+                        <li>公共充电站：市区公共停车场、商业综合体</li>
+                        <li>专用充电站：公交集团、物流公司、企事业单位</li>
+                        <li>社区充电设施：住宅小区、写字楼配套</li>
+                        <li>交通枢纽：机场、高铁站、港口码头</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>算力中心建设</h3>
+                    <ul>
+                        <li>企业数据中心：私有云、混合云解决方案</li>
+                        <li>AI训练中心：深度学习、机器学习平台</li>
+                        <li>边缘计算节点：分布式算力网络</li>
+                        <li>云计算基础设施：公有云、行业云建设</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 企业文化 -->
+        <section class="fade-in">
+            <h2>企业文化与价值观</h2>
+            <div class="highlight-box">
+                <div class="highlight-title">企业使命</div>
+                <p>通过技术创新和服务优化，推动新能源产业发展，为社会提供清洁、高效、智能的能源解决方案。</p>
+            </div>
+            <div class="grid grid-4 mt-20">
+                <div class="metric-card">
+                    <div class="metric-value">创新驱动</div>
+                    <div class="metric-label">持续技术创新，引领行业发展</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">客户至上</div>
+                    <div class="metric-label">以客户需求为导向，提供优质服务</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">诚信经营</div>
+                    <div class="metric-label">恪守商业道德，建立长期信任</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">合作共赢</div>
+                    <div class="metric-label">与合作伙伴共同成长，共享成功</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系方式 -->
+        <section class="contact-section fade-in">
+            <h2>联系我们 | Contact Us</h2>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <h3>公司名称</h3>
+                    <p>广东五方力量科技有限公司</p>
+                    <p>Guangdong Five Force Technology Co., Ltd.</p>
+                </div>
+                <div class="contact-item">
+                    <h3>母公司</h3>
+                    <p>蓝瞳半导体（深圳）有限公司</p>
+                    <p>Blue Eye Semiconductor (Shenzhen) Co., Ltd.</p>
+                </div>
+                <div class="contact-item">
+                    <h3>业务定位</h3>
+                    <p>蓝瞳半导体集团对外开放窗口</p>
+                    <p>Primary Global Business Interface of BES Group</p>
+                </div>
+                <div class="contact-item">
+                    <h3>核心业务</h3>
+                    <p>新能源充电基础设施</p>
+                    <p>芯片授权分销</p>
+                    <p>算力中心设备</p>
+                    <p>对外贸易服务</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 返回首页按钮 -->
+        <a href="index.html" class="back-to-home">
+            ← 返回首页
+        </a>
+    </div>
+
+    <script>
+        // 添加滚动动画
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
